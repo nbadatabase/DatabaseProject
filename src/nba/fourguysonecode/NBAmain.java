@@ -1,4 +1,4 @@
-package NBA.db;
+package nba.fourguysonecode;
 
 import java.sql.*;
 import java.util.ArrayList;

@@ -1,4 +1,4 @@
-package NBA.db;
+package nba.fourguysonecode;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -9,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import NBA.db.objects.Player;
+import nba.fourguysonecode.objects.Player;
 
 /**
  * Class to make and manipulate the player table
