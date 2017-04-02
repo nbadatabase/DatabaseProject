@@ -1,4 +1,4 @@
-package NBA.db.objects;
+package nba.fourguysonecode.objects;
 
 /**
  * Created by joshuasellers on 4/2/17.
