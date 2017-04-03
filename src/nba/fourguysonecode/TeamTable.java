@@ -45,22 +45,7 @@ public class TeamTable {
                 teams.add(new Team(Integer.getInteger(split[0]),
                         Integer.getInteger(split[1]),
                         split[2],
-                        split[3],
-                        Integer.getInteger(split[4]),
-                        Integer.getInteger(split[5]),
-                        Integer.getInteger(split[6]),
-                        Integer.getInteger(split[7]),
-                        Integer.getInteger(split[8]),
-                        Integer.getInteger(split[9]),
-                        Integer.getInteger(split[10]),
-                        Integer.getInteger(split[11]),
-                        Integer.getInteger(split[12]),
-                        Integer.getInteger(split[13]),
-                        Integer.getInteger(split[14]),
-                        Integer.getInteger(split[15]),
-                        Integer.getInteger(split[16]),
-                        Integer.getInteger(split[17]),
-                        Integer.getInteger(split[18])));
+                        split[3]));
             }
             br.close();
         } catch (IOException e) {
@@ -95,21 +80,6 @@ public class TeamTable {
                     + "DIV_ID INT FOREIGN KEY,"
                     + "TEAM_NAME VARCHAR(255),"
                     + "LOCATION VARCHAR(255),"
-                    + "GAMES_WON INT,"
-                    + "GAMES_LOST INT,"
-                    + "TOT_PTS INT,"
-                    + "FG_ATT INT,"
-                    + "FG_MADE INT,"
-                    + "THREE_ATT INT,"
-                    + "THREE_MADE INT,"
-                    + "FREE_ATT INT,"
-                    + "FREE_MADE INT,"
-                    + "OFF_REBOUND INT,"
-                    + "DEF_REBOUND INT,"
-                    + "ASSISTS INT,"
-                    + "STEALS INT,"
-                    + "BLOCKS INT,"
-                    + "TURNOVERS INT,"
                     + ");" ;
 
             /**
@@ -130,35 +100,15 @@ public class TeamTable {
      * @param div_id
      * @param team_name
      * @param location
-     * @param games_won
-     * @param games_lost
-     * @param tot_pts
-     * @param fg_att
-     * @param fg_made
-     * @param three_att
-     * @param three_made
-     * @param free_att
-     * @param free_made
-     * @param off_rebound
-     * @param def_rebound
-     * @param assists
-     * @param steals
-     * @param blocks
-     * @param turnovers
      */
-    public static void addTeam(Connection conn, int team_id, int div_id, String team_name, String location,
-                               int games_won, int games_lost, int tot_pts, int fg_att,
-                               int fg_made, int three_att, int three_made, int free_att,
-                               int free_made, int off_rebound, int def_rebound, int assists,
-                               int steals, int blocks, int turnovers){
+    public static void addTeam(Connection conn, int team_id, int div_id, String team_name, String location){
 
         /**
          * SQL insert statement
          */
         String query = String.format("INSERT INTO teams "
-                        + "VALUES(%d, %d,\'%s\',\'%s\', %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
-                team_id, div_id, team_name, location, games_won, games_lost, tot_pts, fg_att, fg_made, three_att,
-                three_made, free_att, free_made, off_rebound, def_rebound, assists, steals, blocks, turnovers);
+                        + "VALUES(%d, %d,\'%s\',\'%s\');",
+                team_id, div_id, team_name, location);
         try {
             /**
              * create and execute the query
@@ -187,9 +137,7 @@ public class TeamTable {
          * the order of the data in reference
          * to the columns to ad dit to
          */
-        sb.append("INSERT INTO teams (TEAM_ID, DIV_ID, TEAM_NAME, LOCATION, GAMES_WON, GAMES_LOST, TOT_PTS," +
-                "FG_ATT, FG_MADE, THREE_ATT, THREE_MADE, FREE_ATT, FREE_MADE, OFF_REBOUND, DEF_REBOUND," +
-                "ASSISTS, STEALS, BLOCKS, TURNOVERS) VALUES");
+        sb.append("INSERT INTO teams (TEAM_ID, DIV_ID, TEAM_NAME, LOCATION) VALUES");
 
         /**
          * For each team append a tuple
@@ -200,12 +148,8 @@ public class TeamTable {
          */
         for(int i = 0; i < teams.size(); i++){
             Team t = teams.get(i);
-            sb.append(String.format("(%d, %d,\'%s\',\'%s\', %d, %d, %d, %d, %d," +
-                            " %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
-                    t.getTeam_id(), t.getDiv_id(), t.getTeam_name(), t.getLocation(), t.getGames_won(),
-                    t.getGames_lost(), t.getTot_pts(), t.getFg_att(), t.getFg_made(), t.getThree_att(),
-                    t.getThree_made(), t.getFree_att(), t.getFree_made(), t.getOff_rebound(), t.getDef_rebound(),
-                    t.getAssists(), t.getSteals(), t.getBlocks(), t.getTurnovers()));
+            sb.append(String.format("(%d, %d,\'%s\',\'%s\')",
+                    t.getTeam_id(), t.getDiv_id(), t.getTeam_name(), t.getLocation()));
             if( i != teams.size()-1){
                 sb.append(",");
             }

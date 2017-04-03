@@ -67,7 +67,7 @@ public class NBAmain {
         NBAmain db = new NBAmain();
 
         //Hard drive location of the database
-        String location = "~/h2demo/h2demo";
+        String location = "~/Dropbox/RIT_3rd_Year/NBA_DB";
         String user = "scj";
         String password = "password";
 

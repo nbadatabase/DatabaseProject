@@ -9,16 +9,16 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-import nba.fourguysonecode.objects.Player;
+import nba.fourguysonecode.objects.PlayerStats;
 
 /**
- * Class to make and manipulate the player table
+ * Class to make and manipulate the playerstats table
  * @author joshuasellers
- * Created on 4/2/17.
+ * Created on 4/3/17.
  */
-public class PlayerTable {
+public class PlayerStatsTable {
     /**
-     * Reads a cvs file for data and adds them to the player table
+     * Reads a cvs file for data and adds them to the playerstats table
      *
      * Does not create the table. It must already be created
      *
@@ -27,7 +27,7 @@ public class PlayerTable {
      * @throws SQLException
      */
 
-    public static void populatePlayerTableFromCSV(Connection conn,
+    public static void populatePlayerStatsTableFromCSV(Connection conn,
                                                   String fileName)
             throws SQLException{
         /**
@@ -37,17 +37,28 @@ public class PlayerTable {
          * You can do the reading and adding to the table in one
          * step, I just broke it up for example reasons
          */
-        ArrayList<Player> players = new ArrayList<>();
+        ArrayList<PlayerStats> playerstats = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String line;
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
-                players.add(new Player(Integer.getInteger(split[0]),
+                playerstats.add(new PlayerStats(Integer.getInteger(split[0]),
                         Integer.getInteger(split[1]),
-                        split[2],
-                        split[3],
-                        split[4]));
+                        Integer.getInteger(split[5]),
+                        Integer.getInteger(split[6]),
+                        Integer.getInteger(split[7]),
+                        Integer.getInteger(split[8]),
+                        Integer.getInteger(split[9]),
+                        Integer.getInteger(split[10]),
+                        Integer.getInteger(split[11]),
+                        Integer.getInteger(split[12]),
+                        Integer.getInteger(split[13]),
+                        Integer.getInteger(split[14]),
+                        Integer.getInteger(split[15]),
+                        Integer.getInteger(split[16]),
+                        Integer.getInteger(split[17]),
+                        Integer.getInteger(split[18])));
             }
             br.close();
         } catch (IOException e) {
@@ -55,11 +66,11 @@ public class PlayerTable {
         }
 
         /**
-         * Creates the SQL query to do a bulk add of all players
+         * Creates the SQL query to do a bulk add of all playerstats
          * that were read in. This is more efficient then adding one
          * at a time
          */
-        String sql = createPlayerInsertSQL(players);
+        String sql = createPlayerStatsInsertSQL(playerstats);
 
         /**
          * Create and execute an SQL statement
@@ -71,18 +82,29 @@ public class PlayerTable {
     }
 
     /**
-     * Create the player table with the given attributes
+     * Create the playerstats table with the given attributes
      *
      * @param conn: the database connection to work with
      */
-    public static void createPlayerTable(Connection conn){
+    public static void createPlayerStatsTable(Connection conn){
         try {
             String query = "CREATE TABLE IF NOT EXISTS players("
                     + "PLAYER_ID INT PRIMARY KEY,"
-                    + "TEAM_ID INT FOREIGN KEY,"
-                    + "FIRST_NAME VARCHAR(255),"
-                    + "LAST_NAME VARCHAR(255),"
-                    + "DOB DATE"
+                    + "GAMES_PLAYED INT,"
+                    + "TOT_MINS INT,"
+                    + "TOT_PTS INT,"
+                    + "FG_ATT INT,"
+                    + "FG_MADE INT,"
+                    + "THREE_ATT INT,"
+                    + "THREE_MADE INT,"
+                    + "FREE_ATT INT,"
+                    + "FREE_MADE INT,"
+                    + "OFF_REBOUND INT,"
+                    + "DEF_REBOUND INT,"
+                    + "ASSISTS INT,"
+                    + "STEALS INT,"
+                    + "BLOCKS INT,"
+                    + "TURNOVERS INT,"
                     + ");" ;
 
             /**
@@ -96,28 +118,52 @@ public class PlayerTable {
     }
 
     /**
-     * Adds a single player to the database
+     * Adds a single playerstats to the database
      *
      * @param conn
      * @param player_id
-     * @param team_id
-     * @param first_name
-     * @param last_name
-     * @param dob
+     * @param games_played
+     * @param tot_mins
+     * @param fg_att
+     * @param fg_made
+     * @param three_att
+     * @param three_made
+     * @param free_att
+     * @param free_made
+     * @param off_rebound
+     * @param def_rebound
+     * @param assists
+     * @param steals
+     * @param blocks
+     * @param turnovers
      */
-    public static void addPlayer(Connection conn,
+    public static void addPlayerStats(Connection conn,
                                  int player_id,
-                                 int team_id,
-                                 String first_name,
-                                 String last_name,
-                                 String dob){
+                                 int games_played,
+                                 int tot_mins,
+                                 int tot_pts,
+                                 int fg_att,
+                                 int fg_made,
+                                 int three_att,
+                                 int three_made,
+                                 int free_att,
+                                 int free_made,
+                                 int off_rebound,
+                                 int def_rebound,
+                                 int assists,
+                                 int steals,
+                                 int blocks,
+                                 int turnovers){
 
         /**
          * SQL insert statement
          */
         String query = String.format("INSERT INTO players "
-                        + "VALUES(%d, %d,\'%s\',\'%s\',\'%s\');",
-                player_id, team_id, first_name, last_name, dob);
+                        + "VALUES(%d, %d, %d, %d, %d, %d, " +
+                        "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
+                player_id, games_played, tot_mins, tot_pts, fg_att, fg_made,
+                three_att, three_made, free_att, free_made, off_rebound,
+                def_rebound, assists, steals, blocks, turnovers);
         try {
             /**
              * create and execute the query
@@ -131,13 +177,13 @@ public class PlayerTable {
     }
 
     /**
-     * This creates an sql statement to do a bulk add of players
+     * This creates an sql statement to do a bulk add of playerstats
      *
-     * @param players: list of Player objects to add
+     * @param playerstats: list of PlayerStats objects to add
      *
      * @return
      */
-    public static String createPlayerInsertSQL(ArrayList<Player> players){
+    public static String createPlayerStatsInsertSQL(ArrayList<PlayerStats> playerstats){
         StringBuilder sb = new StringBuilder();
 
         /**
@@ -146,20 +192,26 @@ public class PlayerTable {
          * the order of the data in reference
          * to the columns to ad dit to
          */
-        sb.append("INSERT INTO players (PLAYER_ID, TEAM_ID, FIRST_NAME, LAST_NAME, DOB) VALUES");
+        sb.append("INSERT INTO playerstats (PLAYER_ID, GAMES_PLAYED, TOT_MINS," +
+                "TOT_PTS, FG_ATT, FG_MADE, THREE_ATT, THREE_MADE, FREE_ATT, FREE_MADE, OFF_REBOUND," +
+                "DEF_REBOUND, ASSISTS, STEALS, BLOCKS, TURNOVERS) VALUES");
 
         /**
-         * For each player append a tuple
+         * For each playerstats append a tuple
          *
-         * If it is not the last player add a comma to seperate
+         * If it is not the last playerstats add a comma to seperate
          *
-         * If it is the last player add a semi-colon to end the statement
+         * If it is the last playerstats add a semi-colon to end the statement
          */
-        for(int i = 0; i < players.size(); i++){
-            Player p = players.get(i);
-            sb.append(String.format("(%d, %d,\'%s\',\'%s\',\'%s\')",
-                    p.getPlayer_id(), p.getTeam_id(), p.getFirst_name(), p.getLast_name(), p.getDob()));
-            if( i != players.size()-1){
+        for(int i = 0; i < playerstats.size(); i++){
+            PlayerStats ps = playerstats.get(i);
+            sb.append(String.format("(%d, %d,\'%s\',\'%s\',\'%s\', %d, %d, %d, %d, %d, " +
+                            "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+                    ps.getPlayer_id(), ps.getGames_played(), ps.getTot_mins(), ps.getTot_pts(), ps.getFg_att(),
+                    ps.getFg_made(), ps.getThree_att(), ps.getThree_made(), ps.getFree_att(), ps.getFree_made(),
+                    ps.getOff_rebound(), ps.getDef_rebound(), ps.getAssists(), ps.getSteals(), ps.getBlocks(),
+                    ps.getTurnovers()));
+            if( i != playerstats.size()-1){
                 sb.append(",");
             }
             else{
@@ -171,7 +223,7 @@ public class PlayerTable {
     }
 
     /**
-     * Makes a query to the player table
+     * Makes a query to the playerstats table
      * with given columns and conditions
      *
      * @param conn
@@ -179,7 +231,7 @@ public class PlayerTable {
      * @param whereClauses: conditions to limit query by
      * @return
      */
-    public static ResultSet queryPlayerTable(Connection conn,
+    public static ResultSet queryPlayerStatsTable(Connection conn,
                                              ArrayList<String> columns,
                                              ArrayList<String> whereClauses){
         StringBuilder sb = new StringBuilder();
@@ -212,7 +264,7 @@ public class PlayerTable {
         /**
          * Tells it which table to get the data from
          */
-        sb.append("FROM players ");
+        sb.append("FROM playerstats ");
 
         /**
          * If we gave it conditions append them
