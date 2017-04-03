@@ -18,7 +18,7 @@ import nba.fourguysonecode.objects.Player;
  */
 public class PlayerTable {
     /**
-     * Reads a cvs file for data and adds them to the person table
+     * Reads a cvs file for data and adds them to the player table
      *
      * Does not create the table. It must already be created
      *
@@ -27,7 +27,7 @@ public class PlayerTable {
      * @throws SQLException
      */
 
-    public static void populatePersonTableFromCSV(Connection conn,
+    public static void populatePlayerTableFromCSV(Connection conn,
                                                   String fileName)
             throws SQLException{
         /**
@@ -47,7 +47,22 @@ public class PlayerTable {
                         Integer.getInteger(split[1]),
                         split[2],
                         split[3],
-                        split[4]));
+                        split[4],
+                        Integer.getInteger(split[5]),
+                        Integer.getInteger(split[6]),
+                        Integer.getInteger(split[7]),
+                        Integer.getInteger(split[8]),
+                        Integer.getInteger(split[9]),
+                        Integer.getInteger(split[10]),
+                        Integer.getInteger(split[11]),
+                        Integer.getInteger(split[12]),
+                        Integer.getInteger(split[13]),
+                        Integer.getInteger(split[14]),
+                        Integer.getInteger(split[15]),
+                        Integer.getInteger(split[16]),
+                        Integer.getInteger(split[17]),
+                        Integer.getInteger(split[18]),
+                        Integer.getInteger(split[19])));
             }
             br.close();
         } catch (IOException e) {
@@ -55,7 +70,7 @@ public class PlayerTable {
         }
 
         /**
-         * Creates the SQL query to do a bulk add of all people
+         * Creates the SQL query to do a bulk add of all players
          * that were read in. This is more efficient then adding one
          * at a time
          */
@@ -71,7 +86,7 @@ public class PlayerTable {
     }
 
     /**
-     * Create the person table with the given attributes
+     * Create the player table with the given attributes
      *
      * @param conn: the database connection to work with
      */
@@ -82,7 +97,22 @@ public class PlayerTable {
                     + "TEAM_ID INT FOREIGN KEY,"
                     + "FIRST_NAME VARCHAR(255),"
                     + "LAST_NAME VARCHAR(255),"
-                    + "DOB DATE,"
+                    + "GAMES_PLAYED INT,"
+                    + "DOB DATE"
+                    + "TOT_MINS INT,"
+                    + "TOT_PTS INT,"
+                    + "FG_ATT INT,"
+                    + "FG_MADE INT,"
+                    + "THREE_ATT INT,"
+                    + "THREE_MADE INT,"
+                    + "FREE_ATT INT,"
+                    + "FREE_MADE INT,"
+                    + "OFF_REBOUND INT,"
+                    + "DEF_REBOUND INT,"
+                    + "ASSISTS INT,"
+                    + "STEALS INT,"
+                    + "BLOCKS INT,"
+                    + "TURNOVERS INT,"
                     + ");" ;
 
             /**
@@ -96,7 +126,7 @@ public class PlayerTable {
     }
 
     /**
-     * Adds a single person to the database
+     * Adds a single player to the database
      *
      * @param conn
      * @param player_id
@@ -104,20 +134,52 @@ public class PlayerTable {
      * @param first_name
      * @param last_name
      * @param dob
+     * @param games_played
+     * @param tot_mins
+     * @param fg_att
+     * @param fg_made
+     * @param three_att
+     * @param three_made
+     * @param free_att
+     * @param free_made
+     * @param off_rebound
+     * @param def_rebound
+     * @param assists
+     * @param steals
+     * @param blocks
+     * @param turnovers
      */
-    public static void addPerson(Connection conn,
+    public static void addPlayer(Connection conn,
                                  int player_id,
                                  int team_id,
                                  String first_name,
                                  String last_name,
-                                 String dob){
+                                 String dob,
+                                 int games_played,
+                                 int tot_mins,
+                                 int tot_pts,
+                                 int fg_att,
+                                 int fg_made,
+                                 int three_att,
+                                 int three_made,
+                                 int free_att,
+                                 int free_made,
+                                 int off_rebound,
+                                 int def_rebound,
+                                 int assists,
+                                 int steals,
+                                 int blocks,
+                                 int turnovers){
 
         /**
          * SQL insert statement
          */
         String query = String.format("INSERT INTO players "
-                        + "VALUES(%d, %d,\'%s\',\'%s\',\'%s\');",
-                player_id, team_id, first_name, last_name, dob);
+                        + "VALUES(%d, %d,\'%s\',\'%s\',\'%s\', %d, %d, %d, %d, %d, " +
+                        "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
+                player_id, team_id, first_name, last_name, dob, games_played, tot_mins, tot_pts, fg_att, fg_made,
+                three_att, three_made, free_att, free_made, off_rebound,
+                def_rebound, assists, steals, blocks, turnovers);
         try {
             /**
              * create and execute the query
@@ -131,9 +193,9 @@ public class PlayerTable {
     }
 
     /**
-     * This creates an sql statement to do a bulk add of people
+     * This creates an sql statement to do a bulk add of players
      *
-     * @param players: list of Person objects to add
+     * @param players: list of Player objects to add
      *
      * @return
      */
@@ -146,7 +208,9 @@ public class PlayerTable {
          * the order of the data in reference
          * to the columns to ad dit to
          */
-        sb.append("INSERT INTO players (id, FIRST_NAME, LAST_NAME, MI) VALUES");
+        sb.append("INSERT INTO players (PLAYER_ID, TEAM_ID, FIRST_NAME, LAST_NAME, DOB, GAMES_PLAYED, TOT_MINS," +
+                "TOT_PTS, FG_ATT, FG_MADE, THREE_ATT, THREE_MADE, FREE_ATT, FREE_MADE, OFF_REBOUND," +
+                "DEF_REBOUND, ASSISTS, STEALS, BLOCKS, TURNOVERS) VALUES");
 
         /**
          * For each player append a tuple
@@ -157,8 +221,12 @@ public class PlayerTable {
          */
         for(int i = 0; i < players.size(); i++){
             Player p = players.get(i);
-            sb.append(String.format("(%d,%d,\'%s\',\'%s\',\'%s\')",
-                    p.getPlayer_id(), p.getTeam_id(), p.getFirst_name(), p.getLast_name(), p.getDob()));
+            sb.append(String.format("(%d, %d,\'%s\',\'%s\',\'%s\', %d, %d, %d, %d, %d, " +
+                            "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+                    p.getPlayer_id(), p.getTeam_id(), p.getFirst_name(), p.getLast_name(), p.getDob(),
+                    p.getGames_played(), p.getTot_mins(), p.getTot_pts(), p.getFg_att(), p.getFg_made(),
+                    p.getThree_att(), p.getThree_made(), p.getFree_att(), p.getFree_made(), p.getOff_rebound(),
+                    p.getDef_rebound(), p.getAssists(), p.getSteals(), p.getBlocks(), p.getTurnovers()));
             if( i != players.size()-1){
                 sb.append(",");
             }
