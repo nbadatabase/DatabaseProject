@@ -63,7 +63,7 @@ public class NBAmain {
         }
     }
 
-    public static String playerSearch(String inp, Scanner sc){
+    private String playerSearch(String inp, Scanner sc){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -151,7 +151,7 @@ public class NBAmain {
         return inp;
     }
 
-    public static String teamSearch(String inp, Scanner sc){
+    private String teamSearch(String inp, Scanner sc){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -239,7 +239,7 @@ public class NBAmain {
         return inp;
     }
 
-    public static String divisionSearch(String inp, Scanner sc){
+    private String divisionSearch(String inp, Scanner sc){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -301,7 +301,7 @@ public class NBAmain {
         return inp;
     }
 
-    public static String conferenceSearch(String inp, Scanner sc){
+    private String conferenceSearch(String inp, Scanner sc){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -397,10 +397,10 @@ public class NBAmain {
             System.out.println("  c: explore conference data");
             System.out.println("  q: quit database");
             String s = scan.next();
-            if(s.equals("p")){s = playerSearch(s, scan);}
-            else if(s.equals("t")){s = teamSearch(s, scan);}
-            else if(s.equals("d")){s = divisionSearch(s, scan);}
-            else if(s.equals("c")){s = conferenceSearch(s, scan);}
+            if(s.equals("p")){s = db.playerSearch(s, scan);}
+            else if(s.equals("t")){s = db.teamSearch(s, scan);}
+            else if(s.equals("d")){s = db.divisionSearch(s, scan);}
+            else if(s.equals("c")){s = db.conferenceSearch(s, scan);}
             if(s.equals("q")){running = false;}
         }
         db.closeConnection();
