@@ -11,6 +11,8 @@ import java.util.ArrayList;
 
 import nba.fourguysonecode.objects.Conference;
 
+import javax.xml.transform.Result;
+
 /**
  * Class to make and manipulate the conference table
  * @author joshuasellers
@@ -153,8 +155,7 @@ public class ConferenceTable {
 
         return sb.toString();
     }
-
-    /**
+    /*
      * Makes a query to the conference table
      * with given columns and conditions
      *
@@ -163,6 +164,7 @@ public class ConferenceTable {
      * @param whereClauses: conditions to limit query by
      * @return
      */
+
     public static ResultSet queryConferenceTable(Connection conn,
                                                ArrayList<String> columns,
                                                ArrayList<String> whereClauses){

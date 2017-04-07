@@ -271,7 +271,7 @@ public class NBAmain {
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "DV_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.println("Chose Division:");
+                System.out.println("Choose Division:");
                 inp = sc.next();
                 //TODO run query
                 System.out.println("\nInput 'cont' to continue:");

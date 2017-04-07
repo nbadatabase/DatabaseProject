@@ -252,23 +252,49 @@ public class PlayerTable {
      * Queries and print the table
      * @param conn
      */
-    public static void printPlayerTable(Connection conn){
-        String query = "SELECT * FROM players;";
+    public static void printPlayerTable(Connection conn)
+    {
+        String query = "SELECT * FROM Player " +
+                "INNER JOIN playerstats ON player.player_id = playerstats.player_id" +
+                "INNER JOIN Team ON player.team_id = team.team_id";
         try {
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
-
+            System.out.println("Name:   DOB:   Team:\n  GP:  MIN:  PTS:  FGA: FGM: \n" +
+                    "3PA: 3PM: FTA: FTM: OREB: DREB: \nAST: STL: BLK: TOV:");
             while(result.next()){
-                System.out.printf("Player %d: %d %s %s %s\n",
-                        result.getInt(1),
-                        result.getInt(2),
-                        result.getString(3),
-                        result.getString(4),
-                        result.getString(5));
+                System.out.printf("$-5s $-5s $-5s $-5s \n",   //NAME;DOB;TEAM
+                        result.getString(3), //First name
+                        result.getString(4), //Last name
+                        result.getDate(5), //DOB
+                        result.getString(24),  //Should be team name
+                        "$-5d $-5d $-5d $-5d $-5d\n", //GP:  MIN:  PTS:  FGA: FGM:
+                        result.getInt(7), //GP
+                        result.getInt(8), //MIN
+                        result.getInt(9), //PTS
+                        result.getInt(10), //FGA
+                        result.getInt(11), //FGM
+                        "$-5d $-5d $-5d $-5d $-5d $-5d\n", //3PA: 3PM: FTA: FTM: OREB: DREB:
+                        result.getInt(12),//3PA
+                        result.getInt(13),//3PM
+                        result.getInt(14),//FTA
+                        result.getInt(15),//FTM
+                        result.getInt(16),//OREB
+                        result.getInt(17),//DREB
+                        "$-5d $-5d $-5d $-5d\n", //AST: STL: BLK: TOV:
+                        result.getInt(18),//AST
+                        result.getInt(19),//STL
+                        result.getInt(20),//BLK
+                        result.getInt(21)//TOV
+                );
+
+
             }
-        } catch (SQLException e) {
+
+        }
+        catch (SQLException e)
+        {
             e.printStackTrace();
         }
-
     }
 }
