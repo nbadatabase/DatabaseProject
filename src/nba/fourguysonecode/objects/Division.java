@@ -15,6 +15,12 @@ public class Division {
         this.div_name = div_name;
     }
 
+    public Division(String[] data){
+        this.div_id = Integer.parseInt(data[0]);
+        this.conf_id = Integer.parseInt(data[1]);
+        this.div_name = data[2];
+    }
+
     public int getDiv_id() {return div_id;}
     public int getConf_id() {return conf_id;}
     public String getDiv_name() {return div_name;}

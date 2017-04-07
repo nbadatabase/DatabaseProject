@@ -7,7 +7,7 @@ public class TeamStats {
     int team_id;
     int games_won;
     int games_lost;
-    int tot_pts;
+    float tot_pts;
     int fg_att;
     int fg_made;
     int three_att;
@@ -21,7 +21,7 @@ public class TeamStats {
     int blocks;
     int turnovers;
 
-    public TeamStats(int team_id, int games_won, int games_lost, int tot_pts, int fg_att,
+    public TeamStats(int team_id, int games_won, int games_lost, float tot_pts, int fg_att,
                      int fg_made, int three_att, int three_made, int free_att,
                      int free_made, int off_rebound, int def_rebound, int assists,
                      int steals, int blocks, int turnovers){
@@ -43,10 +43,29 @@ public class TeamStats {
         this.turnovers = turnovers;
     }
 
+    public TeamStats(String[] data){
+        this.team_id = Integer.parseInt(data[0]);
+        this.games_won = Integer.parseInt(data[1]);
+        this.games_lost = Integer.parseInt(data[2]);
+        this.tot_pts = Float.parseFloat(data[3]);
+        this.fg_att = Integer.parseInt(data[4]);
+        this.fg_made = Integer.parseInt(data[5]);
+        this.three_att = Integer.parseInt(data[6]);
+        this.three_made = Integer.parseInt(data[7]);
+        this.free_att = Integer.parseInt(data[8]);
+        this.free_made = Integer.parseInt(data[9]);
+        this.off_rebound = Integer.parseInt(data[10]);
+        this.def_rebound = Integer.parseInt(data[11]);
+        this.assists = Integer.parseInt(data[12]);
+        this.steals =Integer.parseInt(data[13]);
+        this.blocks =Integer.parseInt(data[14]);
+        this.turnovers = Integer.parseInt(data[15]);
+    }
+
     public int getTeam_id() {return team_id;}
     public int getGames_won() {return games_won;}
     public int getGames_lost() {return games_lost;}
-    public int getTot_pts() {return tot_pts;}
+    public float getTot_pts() {return tot_pts;}
     public int getFg_att() {return fg_att;}
     public int getFg_made() {return fg_made;}
     public int getThree_att() {return three_att;}
