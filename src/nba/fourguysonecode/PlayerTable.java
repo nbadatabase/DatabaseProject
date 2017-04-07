@@ -263,29 +263,33 @@ public class PlayerTable {
             System.out.println("Name:   DOB:   Team:\n  GP:  MIN:  PTS:  FGA: FGM: \n" +
                     "3PA: 3PM: FTA: FTM: OREB: DREB: \nAST: STL: BLK: TOV:");
             while(result.next()){
-                System.out.printf("$-5s $-5s $-5s $-5s \n",   //NAME;DOB;TEAM
-                        result.getString(3), //First name
-                        result.getString(4), //Last name
-                        result.getDate(5), //DOB
-                        result.getString(24),  //Should be team name
-                        "$-5d $-5d $-5d $-5d $-5d\n", //GP:  MIN:  PTS:  FGA: FGM:
-                        result.getInt(7), //GP
-                        result.getInt(8), //MIN
-                        result.getInt(9), //PTS
-                        result.getInt(10), //FGA
-                        result.getInt(11), //FGM
-                        "$-5d $-5d $-5d $-5d $-5d $-5d\n", //3PA: 3PM: FTA: FTM: OREB: DREB:
-                        result.getInt(12),//3PA
-                        result.getInt(13),//3PM
-                        result.getInt(14),//FTA
-                        result.getInt(15),//FTM
-                        result.getInt(16),//OREB
-                        result.getInt(17),//DREB
-                        "$-5d $-5d $-5d $-5d\n", //AST: STL: BLK: TOV:
-                        result.getInt(18),//AST
-                        result.getInt(19),//STL
-                        result.getInt(20),//BLK
-                        result.getInt(21)//TOV
+                System.out.format("%-5s %-5s %-5s %-5s \n"  +           //NAME;DOB;TEAM
+                                  "%-5d %-5d %-5d %-5d %-5d\n" +        //GP:  MIN:  PTS:  FGA: FGM:
+                                  "%-5d %-5d %-5d %-5d %-5d %-5d\n" +   //3PA: 3PM: FTA: FTM: OREB: DREB:
+                                  "%-5d %-5d %-5d %-5d\n",              //AST: STL: BLK: TOV:
+
+                                  result.getString(3),  //First name
+                                  result.getString(4),  //Last name
+                                  result.getDate(5),    //DOB
+                                  result.getString(24), //Should be team name
+                                              
+                                  result.getInt(7),     //GP
+                                  result.getInt(8),     //MIN
+                                  result.getInt(9),     //PTS
+                                  result.getInt(10),    //FGA
+                                  result.getInt(11),    //FGM
+                                    
+                                  result.getInt(12),    //3PA
+                                  result.getInt(13),    //3PM
+                                  result.getInt(14),    //FTA
+                                  result.getInt(15),    //FTM
+                                  result.getInt(16),    //OREB
+                                  result.getInt(17),    //DREB
+                                  
+                                  result.getInt(18),    //AST
+                                  result.getInt(19),    //STL
+                                  result.getInt(20),    //BLK
+                                  result.getInt(21)     //TOV
                 );
 
 
