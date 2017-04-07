@@ -384,27 +384,27 @@ public class NBAmain {
         try {
             PlayerTable.createPlayerTable(db.getConnection());
             PlayerTable.populatePlayerTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Player.csv" );
+                    "data/Player.csv" );
             //
             PlayerStatsTable.createPlayerStatsTable(db.getConnection());
             PlayerStatsTable.populatePlayerStatsTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/PlayerStats.csv");
+                    "data/PlayerStats.csv");
             //
             TeamTable.createTeamTable(db.getConnection());
             TeamTable.populateTeamTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Team.csv" );
+                    "data/Team.csv" );
             //
             TeamStatsTable.createTeamStatsTable(db.getConnection());
             TeamStatsTable.populateTeamStatsTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/TeamStats.csv");
+                    "data/TeamStats.csv");
             //
             ConferenceTable.createConferenceTable(db.getConnection());
             ConferenceTable.populateConferenceTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Conference.csv");
+                    "data/Conference.csv");
             //
             DivisionTable.createDivisionTable(db.getConnection());
             DivisionTable.populateDivisionTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Division.csv");
+                    "data/Division.csv");
             //
 
         }

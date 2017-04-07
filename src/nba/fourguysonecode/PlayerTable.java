@@ -112,14 +112,14 @@ public class PlayerTable {
                                  String last_name,
                                  String dob){
 
-        /**
+        /*
          * SQL insert statement
          */
         String query = String.format("INSERT INTO players "
                         + "VALUES(%d, %d,\'%s\',\'%s\',\'%s\');",
                 player_id, team_id, first_name, last_name, dob);
         try {
-            /**
+            /*
              * create and execute the query
              */
             Statement stmt = conn.createStatement();
