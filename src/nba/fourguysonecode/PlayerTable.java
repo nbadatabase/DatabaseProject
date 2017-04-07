@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.sql.*;
 
 import nba.fourguysonecode.objects.Player;
 
@@ -37,20 +38,19 @@ public class PlayerTable {
          * You can do the reading and adding to the table in one
          * step, I just broke it up for example reasons
          */
-        ArrayList<Player> players = new ArrayList<>();
+        ArrayList<Player> players = new ArrayList<Player>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
             String line;
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
-                players.add(new Player(Integer.getInteger(split[0]),
-                        Integer.getInteger(split[1]),
-                        split[2],
-                        split[3],
-                        split[4]));
+                players.add(new Player(split));
             }
             br.close();
         } catch (IOException e) {
+            e.printStackTrace();
+        }
+        catch (Exception e){
             e.printStackTrace();
         }
 
@@ -62,7 +62,7 @@ public class PlayerTable {
         String sql = createPlayerInsertSQL(players);
 
         /**
-         * Create and execute an SQL statement
+         * Create and execute a SQL statement
          *
          * execute only returns if it was successful
          */
@@ -79,10 +79,10 @@ public class PlayerTable {
         try {
             String query = "CREATE TABLE IF NOT EXISTS players("
                     + "PLAYER_ID INT PRIMARY KEY,"
-                    + "TEAM_ID INT FOREIGN KEY,"
+                    + "TEAM_ID INT,"
                     + "FIRST_NAME VARCHAR(255),"
                     + "LAST_NAME VARCHAR(255),"
-                    + "DOB DATE"
+                    + "DOB VARCHAR(8),"
                     + ");" ;
 
             /**
@@ -247,5 +247,28 @@ public class PlayerTable {
             e.printStackTrace();
         }
         return null;
+    }
+    /**
+     * Queries and print the table
+     * @param conn
+     */
+    public static void printPlayerTable(Connection conn){
+        String query = "SELECT * FROM players;";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+
+            while(result.next()){
+                System.out.printf("Player %d: %d %s %s %s\n",
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getString(3),
+                        result.getString(4),
+                        result.getString(5));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

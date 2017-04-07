@@ -42,22 +42,7 @@ public class TeamStatsTable {
             String line;
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
-                teamstats.add(new TeamStats(Integer.getInteger(split[0]),
-                        Integer.getInteger(split[1]),
-                        Integer.getInteger(split[2]),
-                        Integer.getInteger(split[3]),
-                        Integer.getInteger(split[4]),
-                        Integer.getInteger(split[5]),
-                        Integer.getInteger(split[6]),
-                        Integer.getInteger(split[7]),
-                        Integer.getInteger(split[8]),
-                        Integer.getInteger(split[9]),
-                        Integer.getInteger(split[10]),
-                        Integer.getInteger(split[11]),
-                        Integer.getInteger(split[12]),
-                        Integer.getInteger(split[13]),
-                        Integer.getInteger(split[14]),
-                        Integer.getInteger(split[15])));
+                teamstats.add(new TeamStats(split));
             }
             br.close();
         } catch (IOException e) {
@@ -91,7 +76,7 @@ public class TeamStatsTable {
                     + "TEAM_ID INT PRIMARY KEY,"
                     + "GAMES_WON INT,"
                     + "GAMES_LOST INT,"
-                    + "TOT_PTS INT,"
+                    + "TOT_PTS FLOAT,"
                     + "FG_ATT INT,"
                     + "FG_MADE INT,"
                     + "THREE_ATT INT,"
@@ -137,7 +122,7 @@ public class TeamStatsTable {
      * @param blocks
      * @param turnovers
      */
-    public static void addTeamStats(Connection conn, int team_id, int games_won, int games_lost, int tot_pts, int fg_att,
+    public static void addTeamStats(Connection conn, int team_id, int games_won, int games_lost, float tot_pts, int fg_att,
                                int fg_made, int three_att, int three_made, int free_att, int free_made, int off_rebound,
                                int def_rebound, int assists, int steals, int blocks, int turnovers){
 
@@ -145,7 +130,7 @@ public class TeamStatsTable {
          * SQL insert statement
          */
         String query = String.format("INSERT INTO teamstats "
-                        + "VALUES(%d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
+                        + "VALUES(%d, %d, %d, %f, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
                 team_id, games_won, games_lost, tot_pts, fg_att, fg_made, three_att,
                 three_made, free_att, free_made, off_rebound, def_rebound, assists, steals, blocks, turnovers);
         try {
@@ -189,8 +174,8 @@ public class TeamStatsTable {
          */
         for(int i = 0; i < teamstats.size(); i++){
             TeamStats ts = teamstats.get(i);
-            sb.append(String.format("(%d, %d,\'%s\',\'%s\', %d, %d, %d, %d, %d," +
-                            " %d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+            sb.append(String.format("(%d, %d, %d, %f, %d, %d, %d, %d, %d," +
+                            " %d, %d, %d, %d, %d, %d, %d)",
                     ts.getTeam_id(), ts.getGames_won(), ts.getGames_lost(), ts.getTot_pts(), ts.getFg_att(),
                     ts.getFg_made(), ts.getThree_att(), ts.getThree_made(), ts.getFree_att(), ts.getFree_made(),
                     ts.getOff_rebound(), ts.getDef_rebound(), ts.getAssists(), ts.getSteals(), ts.getBlocks(),
@@ -283,5 +268,39 @@ public class TeamStatsTable {
             e.printStackTrace();
         }
         return null;
+    }
+    /**
+     * Queries and print the table
+     * @param conn
+     */
+    public static void printTeamStatsTable(Connection conn){
+        String query = "SELECT * FROM teamstats;";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+
+            while(result.next()){
+                System.out.printf("TeamStats %d: %d %d %f %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getInt(3),
+                        result.getFloat(4),
+                        result.getInt(5),
+                        result.getInt(6),
+                        result.getInt(7),
+                        result.getInt(8),
+                        result.getInt(9),
+                        result.getInt(10),
+                        result.getInt(11),
+                        result.getInt(12),
+                        result.getInt(13),
+                        result.getInt(14),
+                        result.getInt(15),
+                        result.getInt(16));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

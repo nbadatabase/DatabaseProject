@@ -42,9 +42,7 @@ public class DivisionTable {
             String line;
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
-                divisions.add(new Division(Integer.getInteger(split[0]),
-                        Integer.getInteger(split[1]),
-                        split[2]));
+                divisions.add(new Division(split));
             }
             br.close();
         } catch (IOException e) {
@@ -76,7 +74,7 @@ public class DivisionTable {
         try {
             String query = "CREATE TABLE IF NOT EXISTS divisions("
                     + "DIV_ID INT PRIMARY KEY,"
-                    + "CONF_ID INT FOREIGN KEY,"
+                    + "CONF_ID INT,"
                     + "DIV_NAME VARCHAR(255),"
                     + ");" ;
 
@@ -235,5 +233,26 @@ public class DivisionTable {
             e.printStackTrace();
         }
         return null;
+    }
+    /**
+     * Queries and print the table
+     * @param conn
+     */
+    public static void printDivisionTable(Connection conn){
+        String query = "SELECT * FROM divisions;";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+
+            while(result.next()){
+                System.out.printf("Player %d: %d %s \n",
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getString(4));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

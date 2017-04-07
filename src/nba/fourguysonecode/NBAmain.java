@@ -1,5 +1,7 @@
 package nba.fourguysonecode;
 
+import nba.fourguysonecode.objects.TeamStats;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.concurrent.SynchronousQueue;
@@ -63,7 +65,7 @@ public class NBAmain {
         }
     }
 
-    private String playerSearch(String inp, Scanner sc){
+    private String playerSearch(String inp, Scanner sc, NBAmain db){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -99,7 +101,7 @@ public class NBAmain {
                     //TODO run query
                 }
                 else{
-                    //TODO run query
+                    PlayerTable.printPlayerTable(db.getConnection());
                 }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
@@ -151,7 +153,7 @@ public class NBAmain {
         return inp;
     }
 
-    private String teamSearch(String inp, Scanner sc){
+    private String teamSearch(String inp, Scanner sc, NBAmain db){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -239,7 +241,7 @@ public class NBAmain {
         return inp;
     }
 
-    private String divisionSearch(String inp, Scanner sc){
+    private String divisionSearch(String inp, Scanner sc, NBAmain db){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -248,7 +250,7 @@ public class NBAmain {
             Arrays.fill(chars, c);
             System.out.print(String.valueOf(chars));
             System.out.println(String.join("", Collections.nCopies(50, "*")));
-            System.out.printf("%32s", "DIVISIONS");
+            System.out.printf("%28s\n", "DIVISIONS");
             System.out.println(String.join("", Collections.nCopies(50, "*")));
             System.out.println("Use these commands to explore the divisions:");
             System.out.println("   dr: Displays records of specific division");
@@ -301,7 +303,7 @@ public class NBAmain {
         return inp;
     }
 
-    private String conferenceSearch(String inp, Scanner sc){
+    private String conferenceSearch(String inp, Scanner sc, NBAmain db){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -378,6 +380,38 @@ public class NBAmain {
 
         //Create the database connections, basically makes the database
         db.createConnection(location, user, password);
+
+        try {
+            PlayerTable.createPlayerTable(db.getConnection());
+            PlayerTable.populatePlayerTableFromCSV(db.getConnection(),
+                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Player.csv" );
+            //
+            PlayerStatsTable.createPlayerStatsTable(db.getConnection());
+            PlayerStatsTable.populatePlayerStatsTableFromCSV(db.getConnection(),
+                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/PlayerStats.csv");
+            //
+            TeamTable.createTeamTable(db.getConnection());
+            TeamTable.populateTeamTableFromCSV(db.getConnection(),
+                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Team.csv" );
+            //
+            TeamStatsTable.createTeamStatsTable(db.getConnection());
+            TeamStatsTable.populateTeamStatsTableFromCSV(db.getConnection(),
+                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/TeamStats.csv");
+            //
+            ConferenceTable.createConferenceTable(db.getConnection());
+            ConferenceTable.populateConferenceTableFromCSV(db.getConnection(),
+                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Conference.csv");
+            //
+            DivisionTable.createDivisionTable(db.getConnection());
+            DivisionTable.populateDivisionTableFromCSV(db.getConnection(),
+                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Division.csv");
+            //
+
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+
         Scanner scan = new Scanner(System.in);
         while(running){
             char c = '\n';
@@ -397,10 +431,10 @@ public class NBAmain {
             System.out.println("  c: explore conference data");
             System.out.println("  q: quit database");
             String s = scan.next();
-            if(s.equals("p")){s = db.playerSearch(s, scan);}
-            else if(s.equals("t")){s = db.teamSearch(s, scan);}
-            else if(s.equals("d")){s = db.divisionSearch(s, scan);}
-            else if(s.equals("c")){s = db.conferenceSearch(s, scan);}
+            if(s.equals("p")){s = db.playerSearch(s, scan, db);}
+            else if(s.equals("t")){s = db.teamSearch(s, scan, db);}
+            else if(s.equals("d")){s = db.divisionSearch(s, scan, db);}
+            else if(s.equals("c")){s = db.conferenceSearch(s, scan, db);}
             if(s.equals("q")){running = false;}
         }
         db.closeConnection();

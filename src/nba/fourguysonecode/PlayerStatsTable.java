@@ -43,22 +43,7 @@ public class PlayerStatsTable {
             String line;
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
-                playerstats.add(new PlayerStats(Integer.getInteger(split[0]),
-                        Integer.getInteger(split[1]),
-                        Integer.getInteger(split[5]),
-                        Integer.getInteger(split[6]),
-                        Integer.getInteger(split[7]),
-                        Integer.getInteger(split[8]),
-                        Integer.getInteger(split[9]),
-                        Integer.getInteger(split[10]),
-                        Integer.getInteger(split[11]),
-                        Integer.getInteger(split[12]),
-                        Integer.getInteger(split[13]),
-                        Integer.getInteger(split[14]),
-                        Integer.getInteger(split[15]),
-                        Integer.getInteger(split[16]),
-                        Integer.getInteger(split[17]),
-                        Integer.getInteger(split[18])));
+                playerstats.add(new PlayerStats(split));
             }
             br.close();
         } catch (IOException e) {
@@ -88,11 +73,11 @@ public class PlayerStatsTable {
      */
     public static void createPlayerStatsTable(Connection conn){
         try {
-            String query = "CREATE TABLE IF NOT EXISTS players("
+            String query = "CREATE TABLE IF NOT EXISTS playerstats("
                     + "PLAYER_ID INT PRIMARY KEY,"
                     + "GAMES_PLAYED INT,"
-                    + "TOT_MINS INT,"
-                    + "TOT_PTS INT,"
+                    + "TOT_MINS FLOAT,"
+                    + "TOT_PTS FLOAT,"
                     + "FG_ATT INT,"
                     + "FG_MADE INT,"
                     + "THREE_ATT INT,"
@@ -140,8 +125,8 @@ public class PlayerStatsTable {
     public static void addPlayerStats(Connection conn,
                                  int player_id,
                                  int games_played,
-                                 int tot_mins,
-                                 int tot_pts,
+                                 float tot_mins,
+                                 float tot_pts,
                                  int fg_att,
                                  int fg_made,
                                  int three_att,
@@ -158,8 +143,8 @@ public class PlayerStatsTable {
         /**
          * SQL insert statement
          */
-        String query = String.format("INSERT INTO players "
-                        + "VALUES(%d, %d, %d, %d, %d, %d, " +
+        String query = String.format("INSERT INTO playerstats "
+                        + "VALUES(%d, %d, %f, %f, %d, %d, " +
                         "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
                 player_id, games_played, tot_mins, tot_pts, fg_att, fg_made,
                 three_att, three_made, free_att, free_made, off_rebound,
@@ -205,8 +190,8 @@ public class PlayerStatsTable {
          */
         for(int i = 0; i < playerstats.size(); i++){
             PlayerStats ps = playerstats.get(i);
-            sb.append(String.format("(%d, %d,\'%s\',\'%s\',\'%s\', %d, %d, %d, %d, %d, " +
-                            "%d, %d, %d, %d, %d, %d, %d, %d, %d, %d)",
+            sb.append(String.format("(%d, %d, %f, %f, %d, %d, %d, " +
+                            "%d, %d, %d, %d, %d, %d, %d, %d, %d)",
                     ps.getPlayer_id(), ps.getGames_played(), ps.getTot_mins(), ps.getTot_pts(), ps.getFg_att(),
                     ps.getFg_made(), ps.getThree_att(), ps.getThree_made(), ps.getFree_att(), ps.getFree_made(),
                     ps.getOff_rebound(), ps.getDef_rebound(), ps.getAssists(), ps.getSteals(), ps.getBlocks(),
@@ -299,5 +284,39 @@ public class PlayerStatsTable {
             e.printStackTrace();
         }
         return null;
+    }
+    /**
+     * Queries and print the table
+     * @param conn
+     */
+    public static void printPlayerStatsTable(Connection conn){
+        String query = "SELECT * FROM playerstats;";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+
+            while(result.next()){
+                System.out.printf("Player %d: %d %f %f %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getFloat(3),
+                        result.getFloat(4),
+                        result.getInt(5),
+                        result.getInt(6),
+                        result.getInt(7),
+                        result.getInt(8),
+                        result.getInt(9),
+                        result.getInt(10),
+                        result.getInt(11),
+                        result.getInt(12),
+                        result.getInt(13),
+                        result.getInt(14),
+                        result.getInt(15),
+                        result.getInt(16));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

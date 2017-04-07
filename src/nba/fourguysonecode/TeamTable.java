@@ -42,10 +42,7 @@ public class TeamTable {
             String line;
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
-                teams.add(new Team(Integer.getInteger(split[0]),
-                        Integer.getInteger(split[1]),
-                        split[2],
-                        split[3]));
+                teams.add(new Team(split));
             }
             br.close();
         } catch (IOException e) {
@@ -77,7 +74,7 @@ public class TeamTable {
         try {
             String query = "CREATE TABLE IF NOT EXISTS teams("
                     + "TEAM_ID INT PRIMARY KEY,"
-                    + "DIV_ID INT FOREIGN KEY,"
+                    + "DIV_ID INT,"
                     + "TEAM_NAME VARCHAR(255),"
                     + "LOCATION VARCHAR(255),"
                     + ");" ;
@@ -238,5 +235,27 @@ public class TeamTable {
             e.printStackTrace();
         }
         return null;
+    }
+    /**
+     * Queries and print the table
+     * @param conn
+     */
+    public static void printTeamTable(Connection conn){
+        String query = "SELECT * FROM teams;";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+
+            while(result.next()){
+                System.out.printf("Team %d: %d %s %s\n",
+                        result.getInt(1),
+                        result.getString(2),
+                        result.getString(4),
+                        result.getString(3));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }

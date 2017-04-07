@@ -42,8 +42,7 @@ public class ConferenceTable {
             String line;
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
-                conferences.add(new Conference(Integer.getInteger(split[0]),
-                        split[1]));
+                conferences.add(new Conference(split));
             }
             br.close();
         } catch (IOException e) {
@@ -232,5 +231,25 @@ public class ConferenceTable {
             e.printStackTrace();
         }
         return null;
+    }
+    /**
+     * Queries and print the table
+     * @param conn
+     */
+    public static void printConferenceTable(Connection conn){
+        String query = "SELECT * FROM conferences;";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+
+            while(result.next()){
+                System.out.printf("Player %d: %s\n",
+                        result.getInt(1),
+                        result.getString(2));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
     }
 }
