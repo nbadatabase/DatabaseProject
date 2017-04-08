@@ -98,10 +98,10 @@ public class NBAmain {
                 System.out.printf("%27s\n", "PL_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 if(inp.equals("*")){
-                    //TODO run query
+                    PlayerTable.printPlayerTable(db.getConnection());
                 }
                 else{
-                    PlayerTable.printPlayerTable(db.getConnection());
+                    //TODO run query
                 }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
@@ -189,7 +189,7 @@ public class NBAmain {
                     //TODO run query
                 }
                 else{
-                    //TODO run query
+                    TeamTable.printTeamTable(db.getConnection());
                 }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();

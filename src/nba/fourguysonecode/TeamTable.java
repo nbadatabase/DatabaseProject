@@ -252,9 +252,9 @@ public class TeamTable {
         try {
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
-            System.out.printf("Team:  Location Win: Loss:\n");
             while(result.next()){
-                System.out.printf("%s  %s  %d  %d\n",
+                System.out.println("*************************************");
+                System.out.printf("%s  \nLocation: %s  Wins: %d  Loss: %d\n",
                         result.getString(3),
                         result.getString(4),
                         result.getInt(5),
