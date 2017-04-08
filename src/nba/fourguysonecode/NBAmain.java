@@ -345,7 +345,7 @@ public class NBAmain {
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "CN_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                //TODO run query
+                ConferenceTable.printConferenceTable(db.getConnection());
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }

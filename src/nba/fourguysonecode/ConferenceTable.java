@@ -243,9 +243,9 @@ public class ConferenceTable {
      */
     public static void printConferenceTable(Connection conn){
         String query = "SELECT * FROM conferences " +
-                "INNER JOIN divisions on divisions.conf_id = conferences_id " +
-                "INNER JOIN teams.div_id = divisions.div_id " +
-                "where conferences.conf_name = \"Western\" " +
+                "INNER JOIN divisions ON divisions.conf_id = conferences.conf_id " +
+                "INNER JOIN teams ON teams.div_id = divisions.div_id " +
+                "WHERE conferences.conf_name = \'Western\' " +
                 "ORDER BY teams.win desc";
         try {
 
@@ -253,7 +253,7 @@ public class ConferenceTable {
             ResultSet result = stmt.executeQuery(query);
             int gamesbehind; // gotta get the first place team
             System.out.printf("Western Conference:\n");
-            System.out.printf("Team           W:  L:  PERCENTAGE: \n");
+            System.out.printf("Team            W   L   PERCENTAGE \n");
             while(result.next()){
                 double win_loss = (double)result.getInt(10)/(double)(result.getInt(11)+result.getInt(10));
                 System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
@@ -263,18 +263,20 @@ public class ConferenceTable {
                         win_loss);
             }
             query = "SELECT * FROM conferences " +
-                    "INNER JOIN divisions on divisions.conf_id = conferences_id " +
-                    "INNER JOIN teams.div_id = divisions.div_id " +
-                    "where conferences.conf_name = \"Eastern\" " +
+                    "INNER JOIN divisions ON divisions.conf_id = conferences.conf_id " +
+                    "INNER JOIN teams ON teams.div_id = divisions.div_id " +
+                    "WHERE conferences.conf_name = \'Eastern\' " +
                     "ORDER BY teams.win desc";
+            Statement stmt2 = conn.createStatement();
+            ResultSet result2 = stmt2.executeQuery(query);
             System.out.printf("Eastern Conference:\n");
-            System.out.printf("Team           W:  L:  PERCENTAGE\n");
-            while(result.next()){
-                float win_loss = (float)result.getInt(10)/(float)(result.getInt(11)+result.getInt(10));
+            System.out.printf("Team            W    L   PERCENTAGE\n");
+            while(result2.next()){
+                float win_loss = (float)result2.getInt(10)/(float)(result2.getInt(11)+result2.getInt(10));
                 System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
-                        result.getString(8),
-                        result.getInt(10),
-                        result.getInt(11),
+                        result2.getString(8),
+                        result2.getInt(10),
+                        result2.getInt(11),
                         win_loss);
             }
         } catch (SQLException e) {
