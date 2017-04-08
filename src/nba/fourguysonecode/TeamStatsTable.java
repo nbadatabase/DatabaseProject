@@ -74,8 +74,6 @@ public class TeamStatsTable {
         try {
             String query = "CREATE TABLE IF NOT EXISTS teamstats("
                     + "TEAM_ID INT PRIMARY KEY,"
-                    + "GAMES_WON INT,"
-                    + "GAMES_LOST INT,"
                     + "TOT_PTS FLOAT,"
                     + "FG_ATT INT,"
                     + "FG_MADE INT,"
@@ -106,8 +104,6 @@ public class TeamStatsTable {
      *
      * @param conn
      * @param team_id
-     * @param games_won
-     * @param games_lost
      * @param tot_pts
      * @param fg_att
      * @param fg_made
@@ -122,7 +118,7 @@ public class TeamStatsTable {
      * @param blocks
      * @param turnovers
      */
-    public static void addTeamStats(Connection conn, int team_id, int games_won, int games_lost, float tot_pts, int fg_att,
+    public static void addTeamStats(Connection conn, int team_id, float tot_pts, int fg_att,
                                int fg_made, int three_att, int three_made, int free_att, int free_made, int off_rebound,
                                int def_rebound, int assists, int steals, int blocks, int turnovers){
 
@@ -130,8 +126,8 @@ public class TeamStatsTable {
          * SQL insert statement
          */
         String query = String.format("INSERT INTO teamstats "
-                        + "VALUES(%d, %d, %d, %f, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
-                team_id, games_won, games_lost, tot_pts, fg_att, fg_made, three_att,
+                        + "VALUES(%d, %f, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d, %d);",
+                team_id, tot_pts, fg_att, fg_made, three_att,
                 three_made, free_att, free_made, off_rebound, def_rebound, assists, steals, blocks, turnovers);
         try {
             /**
@@ -161,7 +157,7 @@ public class TeamStatsTable {
          * the order of the data in reference
          * to the columns to ad dit to
          */
-        sb.append("INSERT INTO teamstats (TEAM_ID, GAMES_WON, GAMES_LOST, TOT_PTS," +
+        sb.append("INSERT INTO teamstats (TEAM_ID, TOT_PTS," +
                 "FG_ATT, FG_MADE, THREE_ATT, THREE_MADE, FREE_ATT, FREE_MADE, OFF_REBOUND, DEF_REBOUND," +
                 "ASSISTS, STEALS, BLOCKS, TURNOVERS) VALUES");
 
@@ -174,9 +170,9 @@ public class TeamStatsTable {
          */
         for(int i = 0; i < teamstats.size(); i++){
             TeamStats ts = teamstats.get(i);
-            sb.append(String.format("(%d, %d, %d, %f, %d, %d, %d, %d, %d," +
+            sb.append(String.format("(%d, %f, %d, %d, %d, %d, %d," +
                             " %d, %d, %d, %d, %d, %d, %d)",
-                    ts.getTeam_id(), ts.getGames_won(), ts.getGames_lost(), ts.getTot_pts(), ts.getFg_att(),
+                    ts.getTeam_id(), ts.getTot_pts(), ts.getFg_att(),
                     ts.getFg_made(), ts.getThree_att(), ts.getThree_made(), ts.getFree_att(), ts.getFree_made(),
                     ts.getOff_rebound(), ts.getDef_rebound(), ts.getAssists(), ts.getSteals(), ts.getBlocks(),
                     ts.getTurnovers()));
@@ -280,10 +276,8 @@ public class TeamStatsTable {
             ResultSet result = stmt.executeQuery(query);
 
             while(result.next()){
-                System.out.printf("TeamStats %d: %d %d %f %d %d %d %d %d %d %d %d %d %d %d %d\n",
+                System.out.printf("TeamStats %d: %f %d %d %d %d %d %d %d %d %d %d %d %d\n",
                         result.getInt(1),
-                        result.getInt(2),
-                        result.getInt(3),
                         result.getFloat(4),
                         result.getInt(5),
                         result.getInt(6),
