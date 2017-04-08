@@ -365,6 +365,35 @@ public class NBAmain {
         return inp;
     }
 
+    public ArrayList<String> getTablesFromDatabase()
+    {
+        // Create a new array list to store the results in.
+        ArrayList<String> tableNames = new ArrayList<String>();
+
+        try
+        {
+            // Get a list of tables that aready exist in the database.
+            Statement tableExistsStatement = this.conn.createStatement();
+            ResultSet tableResults = tableExistsStatement.executeQuery("show tables");
+
+            // Loop through all the results in the result set and add each one to the list.
+            while (tableResults.next() == true)
+                tableNames.add(tableResults.getString("TABLE_NAME"));
+
+            // Close the SQL objects.
+            tableResults.close();
+            tableExistsStatement.close();
+        }
+        catch (SQLException e)
+        {
+            // Print a message that we failed to get the table names.
+            System.out.println("NBAmain::getTablesFromDatabase(): failed to get table names from database!");
+        }
+
+        // Return the list of tables.
+        return tableNames;
+    }
+
     /**
      * Starts and runs the database
      * @param args: not used but you can use them
@@ -374,7 +403,7 @@ public class NBAmain {
         Boolean running = true;
 
         //Hard drive location of the database
-        String location = "~/Dropbox/RIT_3rd_Year/SEMESTER2/NBA_DB";
+        String location = "./nba.db";
         String user = "scj";
         String password = "password";
 
@@ -382,30 +411,62 @@ public class NBAmain {
         db.createConnection(location, user, password);
 
         try {
-            //
-            ConferenceTable.createConferenceTable(db.getConnection());
-            ConferenceTable.populateConferenceTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Conference.csv");
-            //
-            DivisionTable.createDivisionTable(db.getConnection());
-            DivisionTable.populateDivisionTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Division.csv");
-            //
-            TeamTable.createTeamTable(db.getConnection());
-            TeamTable.populateTeamTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Team.csv" );
-            //
-            TeamStatsTable.createTeamStatsTable(db.getConnection());
-            TeamStatsTable.populateTeamStatsTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/TeamStats.csv");
-            //
-            PlayerTable.createPlayerTable(db.getConnection());
-            PlayerTable.populatePlayerTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/Player.csv" );
-            //
-            PlayerStatsTable.createPlayerStatsTable(db.getConnection());
-            PlayerStatsTable.populatePlayerStatsTableFromCSV(db.getConnection(),
-                    "/Users/joshuasellers/Dropbox/RIT_3rd_Year/SEMESTER2/DBM/DatabaseProject/PlayerStats.csv");
+            // Get a list of table names that already exist in the database.
+            ArrayList<String> tableNames = db.getTablesFromDatabase();
+
+            // Check if the Conferences table exists and if not create it.
+            if (tableNames.contains(ConferenceTable.TableName) == false)
+            {
+                // Create the conferences table.
+                ConferenceTable.createConferenceTable(db.getConnection());
+                ConferenceTable.populateConferenceTableFromCSV(db.getConnection(),
+                        "./data/Conference.csv");
+            }
+
+            // Check if the Divisions table exists and if not create it.
+            if (tableNames.contains(DivisionTable.TableName) == false)
+            {
+                // Create the divisions table.
+                DivisionTable.createDivisionTable(db.getConnection());
+                DivisionTable.populateDivisionTableFromCSV(db.getConnection(),
+                        "./data/Division.csv");
+            }
+
+            // Check if the teams table exists and if not create it.
+            if (tableNames.contains(TeamTable.TableName) == false)
+            {
+                // Create the teams table.
+                TeamTable.createTeamTable(db.getConnection());
+                TeamTable.populateTeamTableFromCSV(db.getConnection(),
+                        "./data/Team.csv");
+            }
+
+            // Check if the team stats table exists and if not create it.
+            if (tableNames.contains(TeamStatsTable.TableName) == false)
+            {
+                // Create the team stats table.
+                TeamStatsTable.createTeamStatsTable(db.getConnection());
+                TeamStatsTable.populateTeamStatsTableFromCSV(db.getConnection(),
+                        "./data/TeamStats.csv");
+            }
+
+            // Check if the players table exists and if not create it.
+            if (tableNames.contains(PlayerTable.TableName) == false)
+            {
+                // Create the players table.
+                PlayerTable.createPlayerTable(db.getConnection());
+                PlayerTable.populatePlayerTableFromCSV(db.getConnection(),
+                        "./data/Player.csv");
+            }
+
+            // Check if the player stats table exists and if not create it.
+            if (tableNames.contains(PlayerStatsTable.TableName) == false)
+            {
+                // Create the player stats table.
+                PlayerStatsTable.createPlayerStatsTable(db.getConnection());
+                PlayerStatsTable.populatePlayerStatsTableFromCSV(db.getConnection(),
+                        "./data/PlayerStats.csv");
+            }
 
         }
         catch (SQLException e) {

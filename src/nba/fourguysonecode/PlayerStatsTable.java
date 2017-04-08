@@ -17,6 +17,9 @@ import nba.fourguysonecode.objects.PlayerStats;
  * Created on 4/3/17.
  */
 public class PlayerStatsTable {
+
+    public static final String TableName = "PLAYERSTATS";
+
     /**
      * Reads a cvs file for data and adds them to the playerstats table
      *

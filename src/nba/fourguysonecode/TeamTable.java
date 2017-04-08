@@ -17,6 +17,9 @@ import nba.fourguysonecode.objects.Team;
  * Created by joshuasellers on 4/2/17.
  */
 public class TeamTable {
+
+    public static final String TableName = "TEAMS";
+
     /**
      * Reads a cvs file for data and adds them to the team table
      *

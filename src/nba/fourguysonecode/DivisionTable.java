@@ -17,6 +17,9 @@ import nba.fourguysonecode.objects.Division;
  * Created by joshuasellers on 4/2/17.
  */
 public class DivisionTable {
+
+    public static final String TableName = "DIVISIONS";
+
     /**
      * Reads a cvs file for data and adds them to the division table
      *

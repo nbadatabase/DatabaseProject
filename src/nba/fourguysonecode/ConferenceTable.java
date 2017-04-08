@@ -19,6 +19,9 @@ import javax.xml.transform.Result;
  * Created by joshuasellers on 4/2/17.
  */
 public class ConferenceTable {
+
+    public static final String TableName = "CONFERENCES";
+
     /**
      * Reads a cvs file for data and adds them to the conference table
      *
