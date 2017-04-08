@@ -77,9 +77,9 @@ public class TeamTable {
                     + "DIV_ID INT,"
                     + "TEAM_NAME VARCHAR(255),"
                     + "LOCATION VARCHAR(255),"
-                    + "GAMES_WON INT,"
-                    + "GAMES_LOST INT,"
-                    + "FOREIGN KEY (DIV_ID) REFERENCES divisions);" ;
+                    + "WIN INT,"
+                    + "LOSS INT,"
+                    + ");" ;
 
             /**
              * Create a query and execute
@@ -99,18 +99,17 @@ public class TeamTable {
      * @param div_id
      * @param team_name
      * @param location
-     * @param games_won
-     * @param games_lost
+     * @param win
+     * @param loss
      */
-    public static void addTeam(Connection conn, int team_id, int div_id, String team_name, String location,
-                               int games_won, int games_lost){
+    public static void addTeam(Connection conn, int team_id, int div_id, String team_name, String location, int win, int loss){
 
         /**
          * SQL insert statement
          */
         String query = String.format("INSERT INTO teams "
-                        + "VALUES(%d, %d,\'%s\',\'%s\', %d, %d);",
-                team_id, div_id, team_name, location, games_won, games_lost);
+                        + "VALUES(%d, %d,\'%s\',\'%s\', \'%d\', \'%d\');",
+                team_id, div_id, team_name, location, win, loss);
         try {
             /**
              * create and execute the query
@@ -139,7 +138,7 @@ public class TeamTable {
          * the order of the data in reference
          * to the columns to ad dit to
          */
-        sb.append("INSERT INTO teams (TEAM_ID, DIV_ID, TEAM_NAME, LOCATION, GAMES_WON, GAMES_LOST) VALUES");
+        sb.append("INSERT INTO teams (TEAM_ID, DIV_ID, TEAM_NAME, LOCATION, WIN, LOSS) VALUES");
 
         /**
          * For each team append a tuple
@@ -150,9 +149,8 @@ public class TeamTable {
          */
         for(int i = 0; i < teams.size(); i++){
             Team t = teams.get(i);
-            sb.append(String.format("(%d, %d,\'%s\',\'%s\', %d, %d)",
-                    t.getTeam_id(), t.getDiv_id(), t.getTeam_name(), t.getLocation(), t.getGames_won(),
-                    t.getGames_lost()));
+            sb.append(String.format("(%d, %d,\'%s\',\'%s\', \'%d\', \'%d\')",
+                    t.getTeam_id(), t.getDiv_id(), t.getTeam_name(), t.getLocation(), t.getWin(), t.getLoss()));
             if( i != teams.size()-1){
                 sb.append(",");
             }
@@ -251,12 +249,10 @@ public class TeamTable {
         try {
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
-
+            System.out.printf("Team:  Location Win: Loss:\n");
             while(result.next()){
-                System.out.printf("Team %d: %d %s %s %d %d\n",
-                        result.getInt(1),
-                        result.getString(2),
-                        result.getString(4),
+                System.out.printf("%s  %s  %d  %d\n",
+                        result.getString(3),
                         result.getString(4),
                         result.getInt(5),
                         result.getInt(6));

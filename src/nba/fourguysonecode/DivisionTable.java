@@ -239,16 +239,94 @@ public class DivisionTable {
      * @param conn
      */
     public static void printDivisionTable(Connection conn){
-        String query = "SELECT * FROM divisions;";
+        String query = "SELECT * FROM divisions" +
+                "INNER JOIN teams.div_id = divisions.div_id " +
+                "where divisions.div_name = \"Atlantic\" " +
+                "ORDER BY teams.wins desc";
         try {
+
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
-
+            int gamesbehind; // gotta get the first place team
+            System.out.printf("Atlantic Division:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE: \n");
             while(result.next()){
-                System.out.printf("Player %d: %d %s \n",
-                        result.getInt(1),
-                        result.getInt(2),
-                        result.getString(4));
+                double win_loss = (double)result.getInt(10)/(double)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
+            }
+            query = "SELECT * FROM divisions" +
+                    "INNER JOIN teams.div_id = divisions.div_id" +
+                    "where divisions.div_name = \"Central\" " +
+                    "ORDER BY teams.win desc";
+            System.out.printf("Central Division:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE\n");
+            while(result.next()){
+                float win_loss = (float)result.getInt(10)/(float)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
+            }
+            query = "SELECT * FROM divisions" +
+                    "INNER JOIN teams.div_id = divisions.div_id" +
+                    "where divisions.div_name = \"Southeast\" " +
+                    "ORDER BY teams.win desc";
+            System.out.printf("Southeast Division:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE\n");
+            while(result.next()){
+                float win_loss = (float)result.getInt(10)/(float)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
+            }
+            query = "SELECT * FROM divisions" +
+                    "INNER JOIN teams.div_id = divisions.div_id" +
+                    "where divisions.div_name = \"Northwest\" " +
+                    "ORDER BY teams.win desc";
+            System.out.printf("Northwest Division:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE\n");
+            while(result.next()){
+                float win_loss = (float)result.getInt(10)/(float)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
+            }
+            query = "SELECT * FROM divisions" +
+                    "INNER JOIN teams.div_id = divisions.div_id" +
+                    "where divisions.div_name = \"Pacific\" " +
+                    "ORDER BY teams.win desc";
+            System.out.printf("Pacific Division:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE\n");
+            while(result.next()){
+                float win_loss = (float)result.getInt(10)/(float)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
+            }
+            query = "SELECT * FROM divisions" +
+                    "INNER JOIN teams.div_id = divisions.div_id" +
+                    "where divisions.div_name = \"Southwest\" " +
+                    "ORDER BY teams.win desc";
+            System.out.printf("Southwest Division:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE\n");
+            while(result.next()){
+                float win_loss = (float)result.getInt(10)/(float)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
             }
         } catch (SQLException e) {
             e.printStackTrace();

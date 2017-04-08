@@ -239,15 +239,40 @@ public class ConferenceTable {
      * @param conn
      */
     public static void printConferenceTable(Connection conn){
-        String query = "SELECT * FROM conferences;";
+        String query = "SELECT * FROM conferences" +
+                "INNER JOIN divisions on divisions.conf_id = conferences_id" +
+                "INNER JOIN teams.div_id = divisions.div_id " +
+                "where conferences.conf_name = \"Western\" " +
+                "ORDER BY teams.win desc";
         try {
+
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
-
+            int gamesbehind; // gotta get the first place team
+            System.out.printf("Western Conference:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE: \n");
             while(result.next()){
-                System.out.printf("Player %d: %s\n",
-                        result.getInt(1),
-                        result.getString(2));
+                double win_loss = (double)result.getInt(10)/(double)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
+            }
+            query = "SELECT * FROM conferences" +
+                    "INNER JOIN divisions on divisions.conf_id = conferences_id" +
+                    "INNER JOIN teams.div_id = divisions.div_id" +
+                    "where conferences.conf_name = \"Eastern\" " +
+                    "ORDER BY teams.win desc";
+            System.out.printf("Eastern Conference:\n");
+            System.out.printf("Team           W:  L:  PERCENTAGE\n");
+            while(result.next()){
+                float win_loss = (float)result.getInt(10)/(float)(result.getInt(11)+result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
             }
         } catch (SQLException e) {
             e.printStackTrace();
