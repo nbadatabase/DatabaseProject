@@ -239,7 +239,7 @@ public class DivisionTable {
      * @param conn
      */
     public static void printDivisionTable(Connection conn){
-        String query = "SELECT * FROM divisions" +
+        String query = "SELECT * FROM divisions " +
                 "INNER JOIN teams.div_id = divisions.div_id " +
                 "where divisions.div_name = \"Atlantic\" " +
                 "ORDER BY teams.wins desc";
@@ -258,8 +258,8 @@ public class DivisionTable {
                         result.getInt(11),
                         win_loss);
             }
-            query = "SELECT * FROM divisions" +
-                    "INNER JOIN teams.div_id = divisions.div_id" +
+            query = "SELECT * FROM divisions " +
+                    "INNER JOIN teams.div_id = divisions.div_id " +
                     "where divisions.div_name = \"Central\" " +
                     "ORDER BY teams.win desc";
             System.out.printf("Central Division:\n");
@@ -272,8 +272,8 @@ public class DivisionTable {
                         result.getInt(11),
                         win_loss);
             }
-            query = "SELECT * FROM divisions" +
-                    "INNER JOIN teams.div_id = divisions.div_id" +
+            query = "SELECT * FROM divisions " +
+                    "INNER JOIN teams.div_id = divisions.div_id " +
                     "where divisions.div_name = \"Southeast\" " +
                     "ORDER BY teams.win desc";
             System.out.printf("Southeast Division:\n");
@@ -286,8 +286,8 @@ public class DivisionTable {
                         result.getInt(11),
                         win_loss);
             }
-            query = "SELECT * FROM divisions" +
-                    "INNER JOIN teams.div_id = divisions.div_id" +
+            query = "SELECT * FROM divisions " +
+                    "INNER JOIN teams.div_id = divisions.div_id " +
                     "where divisions.div_name = \"Northwest\" " +
                     "ORDER BY teams.win desc";
             System.out.printf("Northwest Division:\n");
@@ -300,8 +300,8 @@ public class DivisionTable {
                         result.getInt(11),
                         win_loss);
             }
-            query = "SELECT * FROM divisions" +
-                    "INNER JOIN teams.div_id = divisions.div_id" +
+            query = "SELECT * FROM divisions " +
+                    "INNER JOIN teams.div_id = divisions.div_id " +
                     "where divisions.div_name = \"Pacific\" " +
                     "ORDER BY teams.win desc";
             System.out.printf("Pacific Division:\n");
@@ -314,8 +314,8 @@ public class DivisionTable {
                         result.getInt(11),
                         win_loss);
             }
-            query = "SELECT * FROM divisions" +
-                    "INNER JOIN teams.div_id = divisions.div_id" +
+            query = "SELECT * FROM divisions " +
+                    "INNER JOIN teams.div_id = divisions.div_id " +
                     "where divisions.div_name = \"Southwest\" " +
                     "ORDER BY teams.win desc";
             System.out.printf("Southwest Division:\n");

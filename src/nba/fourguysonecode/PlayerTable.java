@@ -255,7 +255,7 @@ public class PlayerTable {
     public static void printPlayerTable(Connection conn)
     {
         String query = "SELECT * FROM Player " +
-                "INNER JOIN playerstats ON player.player_id = playerstats.player_id" +
+                "INNER JOIN playerstats ON player.player_id = playerstats.player_id " +
                 "INNER JOIN Team ON player.team_id = team.team_id";
         try {
             Statement stmt = conn.createStatement();

@@ -239,8 +239,8 @@ public class ConferenceTable {
      * @param conn
      */
     public static void printConferenceTable(Connection conn){
-        String query = "SELECT * FROM conferences" +
-                "INNER JOIN divisions on divisions.conf_id = conferences_id" +
+        String query = "SELECT * FROM conferences " +
+                "INNER JOIN divisions on divisions.conf_id = conferences_id " +
                 "INNER JOIN teams.div_id = divisions.div_id " +
                 "where conferences.conf_name = \"Western\" " +
                 "ORDER BY teams.win desc";
@@ -259,9 +259,9 @@ public class ConferenceTable {
                         result.getInt(11),
                         win_loss);
             }
-            query = "SELECT * FROM conferences" +
-                    "INNER JOIN divisions on divisions.conf_id = conferences_id" +
-                    "INNER JOIN teams.div_id = divisions.div_id" +
+            query = "SELECT * FROM conferences " +
+                    "INNER JOIN divisions on divisions.conf_id = conferences_id " +
+                    "INNER JOIN teams.div_id = divisions.div_id " +
                     "where conferences.conf_name = \"Eastern\" " +
                     "ORDER BY teams.win desc";
             System.out.printf("Eastern Conference:\n");
