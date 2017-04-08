@@ -83,7 +83,7 @@ public class PlayerTable {
                     + "FIRST_NAME VARCHAR(255),"
                     + "LAST_NAME VARCHAR(255),"
                     + "DOB VARCHAR(8),"
-                    + ");" ;
+                    + "FOREIGN KEY (TEAM_ID) REFERENCES teams);" ;
 
             /**
              * Create a query and execute
@@ -254,28 +254,27 @@ public class PlayerTable {
      */
     public static void printPlayerTable(Connection conn)
     {
-        String query = "SELECT * FROM Player " +
-                "INNER JOIN playerstats ON player.player_id = playerstats.player_id " +
-                "INNER JOIN Team ON player.team_id = team.team_id";
+        String query = "SELECT * FROM players " +
+                "INNER JOIN playerstats ON players.player_id = playerstats.player_id " +
+                "INNER JOIN teams ON players.team_id = teams.team_id";
         try {
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
-            System.out.println("Name:   DOB:   Team:\n  GP:  MIN:  PTS:  FGA: FGM: \n" +
-                    "3PA: 3PM: FTA: FTM: OREB: DREB: \nAST: STL: BLK: TOV:");
             while(result.next()){
-                System.out.format("%-5s %-5s %-5s %-5s \n"  +           //NAME;DOB;TEAM
-                                  "%-5d %-5d %-5d %-5d %-5d\n" +        //GP:  MIN:  PTS:  FGA: FGM:
-                                  "%-5d %-5d %-5d %-5d %-5d %-5d\n" +   //3PA: 3PM: FTA: FTM: OREB: DREB:
-                                  "%-5d %-5d %-5d %-5d\n",              //AST: STL: BLK: TOV:
+                System.out.println("*************************************************************");
+                System.out.format("%-5s %-5s \nDOB: %-5s Team: %-5s \n"  +
+                                  "GP: %-5d MIN: %-5.2f PTS: %-5.2f FGA: %-5d FGM: %-5d\n" +
+                                  "3PA: %-5d 3PM: %-5d FTA: %-5d FTM: %-5d OREB: %-5d DREB: %-5d\n" +
+                                  "AST: %-5d STL: %-5d BLK: %-5d TOV: %-5d\n",
 
                                   result.getString(3),  //First name
                                   result.getString(4),  //Last name
-                                  result.getDate(5),    //DOB
+                                  result.getString(5),    //DOB
                                   result.getString(24), //Should be team name
                                               
                                   result.getInt(7),     //GP
-                                  result.getInt(8),     //MIN
-                                  result.getInt(9),     //PTS
+                                  result.getFloat(8),     //MIN
+                                  result.getFloat(9),     //PTS
                                   result.getInt(10),    //FGA
                                   result.getInt(11),    //FGM
                                     
