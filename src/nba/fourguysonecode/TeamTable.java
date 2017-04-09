@@ -243,12 +243,61 @@ public class TeamTable {
         }
         return null;
     }
+
+    /**
+     * Queries and prints the full team stats
+     * @param conn
+     */
+    public static void printTeamTable(Connection conn) {
+        String query = "SELECT * FROM teams " +
+                "INNER JOIN teamstats ON teams.team_id = teamstats.team_id";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+            while(result.next()){
+                System.out.println("*************************************************************");
+                System.out.format("%-5s \nGW: %-5d GL: %-5d \n"  +
+                                "PPG: %-5.2f FGA: %-5d FGM: %-5d 3PA: %-5d 3PM: %-5d\n" +
+                                "FTA: %-5d FTM: %-5d OREB: %-5d DREB: %-5d AST: %-5d TRN: %-5d\n" +
+                                "STL: %-5d BLK: %-5d\n",
+
+                        result.getString(3),  //First name
+                        result.getInt(5),    //GW
+                        result.getInt(6), //GL
+
+                        result.getFloat(8),     //PPG
+                        result.getInt(9),     //FGA
+                        result.getInt(10),     //FGM
+                        result.getInt(11),    //TA
+                        result.getInt(12),    //TM
+
+                        result.getInt(13),    //FA
+                        result.getInt(14),    //FM
+                        result.getInt(15),    //OREB
+                        result.getInt(16),    //DREB
+                        result.getInt(17),    //AST
+                        result.getInt(18),    //TRN
+
+                        result.getInt(19),    //STL
+                        result.getInt(20)    //BLK
+                );
+
+
+            }
+
+        }
+        catch (SQLException e)
+        {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Queries and print the table
      * @param conn
      */
-    public static void printTeamTable(Connection conn){
-        String query = "SELECT * FROM teams;";
+    public static void printTeamTableBasic(Connection conn){
+        String query = "SELECT * FROM teams";
         try {
             Statement stmt = conn.createStatement();
             ResultSet result = stmt.executeQuery(query);
@@ -264,5 +313,119 @@ public class TeamTable {
             e.printStackTrace();
         }
 
+    }
+
+    /**
+     * Queries and prints specific tables
+     * @param conn
+     * @param inp2
+     */
+    public static void printTeamTableMulti(Connection conn, String[] inp2) {
+        int s = inp2.length;
+        for (int i = 0; i < s; i++) {
+            String query = "SELECT * FROM teams " +
+                    "INNER JOIN teamstats ON teams.team_id = teamstats.team_id "+
+                    "WHERE teams.team_name = \'" + inp2[i] + "\'";
+            try {
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(query);
+                while(result.next()){
+                    System.out.println("*************************************************************");
+                    System.out.format("%-5s \nGW: %-5d GL: %-5d \n"  +
+                                    "PPG: %-5.2f FGA: %-5d FGM: %-5d 3PA: %-5d 3PM: %-5d\n" +
+                                    "FTA: %-5d FTM: %-5d OREB: %-5d DREB: %-5d AST: %-5d TRN: %-5d\n" +
+                                    "STL: %-5d BLK: %-5d\n",
+
+                            result.getString(3),  //First name
+                            result.getInt(5),    //GW
+                            result.getInt(6), //GL
+
+                            result.getFloat(8),     //PPG
+                            result.getInt(9),     //FGA
+                            result.getInt(10),     //FGM
+                            result.getInt(11),    //TA
+                            result.getInt(12),    //TM
+
+                            result.getInt(13),    //FA
+                            result.getInt(14),    //FM
+                            result.getInt(15),    //OREB
+                            result.getInt(16),    //DREB
+                            result.getInt(17),    //AST
+                            result.getInt(18),    //TRN
+
+                            result.getInt(19),    //STL
+                            result.getInt(20)    //BLK
+                    );
+
+
+                }
+
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Queries and prints specific table's basic info
+     * @param conn
+     * @param inp2
+     */
+    public static void printTeamTableMultiBasic(Connection conn, String[] inp2) {
+        int s = inp2.length;
+        for (int i = 0; i < s; i++) {
+            String query = "SELECT * FROM teams " +
+                    "INNER JOIN teamstats ON teams.team_id = teamstats.team_id "+
+                    "WHERE teams.team_name = \'" + inp2[i] + "\'";
+            try {
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(query);
+                while(result.next()){
+                    System.out.println("*************************************************************");
+                    System.out.format("%-5s \nGW: %-5d GL: %-5d \n",
+                            result.getString(3),  //First name
+                            result.getInt(5),    //GW
+                            result.getInt(6) //GL
+                    );
+                }
+
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Queries and prints specific stats from table
+     * @param conn
+     * @param inp
+     */
+    public static void printTeamStats(Connection conn, String inp){
+        String query = "SELECT " + inp + ", team_name FROM teamstats " +
+                "INNER JOIN teams ON teamstats.team_id = teams.team_id " +
+                "ORDER BY teamstats."+ inp +" DESC";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+            while(result.next()){
+                System.out.println("*************************************");
+                if(inp.equals("tot_pts")){
+                    System.out.printf("%s: %.2f \n",
+                            result.getString(2),
+                            result.getFloat(1));
+                }
+                else{
+                    System.out.printf("%s: %d \n",
+                            result.getString(2),
+                            result.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -1,5 +1,6 @@
 package nba.fourguysonecode;
 
+import nba.fourguysonecode.objects.Player;
 import nba.fourguysonecode.objects.TeamStats;
 
 import java.sql.*;
@@ -80,7 +81,6 @@ public class NBAmain {
             System.out.println("Precede marked commands [x] with 'b' to just show basic player info");
             System.out.println("   [x]*: Gets all the players' stats");
             System.out.println("   [x]fl: Gets one player's stats");
-            System.out.println("   [x]pc: Compares players' stats");
             System.out.println("   s: Shows league leaders for stat");
             System.out.println("   q: quit database");
             System.out.println("   h: return home");
@@ -101,7 +101,7 @@ public class NBAmain {
                     PlayerTable.printPlayerTable(db.getConnection());
                 }
                 else{
-                    //TODO run query
+                    PlayerTable.printPlayerTableBasic(db.getConnection());
                 }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
@@ -114,25 +114,18 @@ public class NBAmain {
                 System.out.printf("%27s\n", "PL_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 if(inp.equals("fl")){
-                    //TODO run query
+                    System.out.println("Players (i.e. Isaiah Thomas, Avery Bradley, ...):");
+                    inp = sc.nextLine();
+                    inp = sc.nextLine();
+                    String[] inp2 = inp.split(", ");
+                    PlayerTable.printPlayerTableMulti(db.getConnection(), inp2);
                 }
                 else{
-                    //TODO run query
-                }
-                System.out.println("\nInput 'cont' to continue:");
-                inp = sc.next();
-            }
-            else if(inp.equals("pc") || inp.equals("bpc")){
-                Arrays.fill(chars, c);
-                System.out.print(String.valueOf(chars));
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.printf("%27s\n", "PL_DATA");
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                if(inp.equals("pc")){
-                    //TODO run query
-                }
-                else{
-                    //TODO run query
+                    System.out.println("Players (i.e. Isaiah Thomas, Avery Bradley, ...):");
+                    inp = sc.nextLine();
+                    inp = sc.nextLine();
+                    String[] inp2 = inp.split(", ");
+                    PlayerTable.printPlayerTableMultiBasic(db.getConnection(), inp2);
                 }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
@@ -143,9 +136,25 @@ public class NBAmain {
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "PL_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.println("Stat(uppercase):");
+                System.out.println("If you want a list of the stats: ls");
+                System.out.println("If you already know your stat: c");
                 inp = sc.next();
-                //TODO run query
+                if (inp.equals("ls")){
+                    System.out.println("Total Minutes: tot_mins, Total Points: tot_pts, " +
+                            "Field Goals Attempted: fg_att,\nField Goals Made: fg_made, " +
+                            "Three Point Shots Attempted: three_att, Three Point Shots Made: three_made,\n" +
+                            "Free Throws Attempted: free_att, Free Throws Made: free_made, " +
+                            "Offensive Rebounds: off_rebound,\nDefensive Rebounds: def_rebound, Assists: assists, " +
+                            "Steals: steals, Blocks: blocks, Turnovers: turnovers");
+                    System.out.println("Stat:");
+                    inp = sc.next();
+                    PlayerTable.printPlayerStats(db.getConnection(), inp);
+                }
+                else {
+                    System.out.println("Stat:");
+                    inp = sc.next();
+                    PlayerTable.printPlayerStats(db.getConnection(), inp);
+                }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }
@@ -162,13 +171,12 @@ public class NBAmain {
             Arrays.fill(chars, c);
             System.out.print(String.valueOf(chars));
             System.out.println(String.join("", Collections.nCopies(50, "*")));
-            System.out.printf("%26s", "TEAMS");
+            System.out.printf("%26s\n", "TEAMS");
             System.out.println(String.join("", Collections.nCopies(50, "*")));
             System.out.println("Use these commands to explore the team:");
             System.out.println("Precede marked commands [x] with 'b' to just show basic team info");
             System.out.println("   [x]*: Gets all the teams' stats");
-            System.out.println("   [x]fl: Gets one team's stats");
-            System.out.println("   [x]pc: Compares teams' stats");
+            System.out.println("   [x]tn: Gets teams' stats");
             System.out.println("   s: Shows league leaders for stat");
             System.out.println("   q: quit database");
             System.out.println("   h: return home");
@@ -186,41 +194,34 @@ public class NBAmain {
                 System.out.printf("%27s\n", "TM_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 if(inp.equals("*")){
-                    //TODO run query
+                    TeamTable.printTeamTable(db.getConnection());
                 }
                 else{
-                    TeamTable.printTeamTable(db.getConnection());
+                    TeamTable.printTeamTableBasic(db.getConnection());
                 }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
 
             }
-            else if(inp.equals("fl") || inp.equals("bfl")){
+            else if(inp.equals("tn") || inp.equals("btn")){
                 Arrays.fill(chars, c);
                 System.out.print(String.valueOf(chars));
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "TM_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                if(inp.equals("fl")){
-                    //TODO run query
+                if(inp.equals("tn")){
+                    System.out.println("Teams to be displayed (i.e. Miami Heat, Boston Celtics, ...):");
+                    inp = sc.nextLine();
+                    inp = sc.nextLine();
+                    String[] inp2 = inp.split(", ");
+                    TeamTable.printTeamTableMulti(db.getConnection(), inp2);
                 }
                 else{
-                    //TODO run query
-                }
-                System.out.println("\nInput 'cont' to continue:");
-                inp = sc.next();
-            }
-            else if(inp.equals("pc") || inp.equals("bpc")){
-                Arrays.fill(chars, c);
-                System.out.print(String.valueOf(chars));
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.printf("%27s\n", "TM_DATA");
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                if(inp.equals("pc")){
-                    //TODO run query
-                }
-                else{
-                    //TODO run query
+                    System.out.println("Teams to be displayed (i.e. Miami Heat, Boston Celtics, ...):");
+                    inp = sc.nextLine();
+                    inp = sc.nextLine();
+                    String[] inp2 = inp.split(", ");
+                    TeamTable.printTeamTableMultiBasic(db.getConnection(), inp2);
                 }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
@@ -231,9 +232,25 @@ public class NBAmain {
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "TM_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.println("Stat(uppercase):");
+                System.out.println("If you want a list of the stats: ls");
+                System.out.println("If you already know your stat: c");
                 inp = sc.next();
-                //TODO run query
+                if (inp.equals("ls")){
+                    System.out.println("Games Won: win, Games Lost: loss, Total Points: tot_pts, " +
+                            "Field Goals Attempted: fg_att,\nField Goals Made: fg_made, " +
+                            "Three Point Shots Attempted: three_att, Three Point Shots Made: three_made,\n" +
+                            "Free Throws Attempted: free_att, Free Throws Made: free_made, " +
+                            "Offensive Rebounds: off_rebound,\nDefensive Rebounds: def_rebound, Assists: assists, " +
+                            "Steals: steals, Blocks: blocks, Turnovers: turnovers");
+                    System.out.println("Stat:");
+                    inp = sc.next();
+                    TeamTable.printTeamStats(db.getConnection(), inp);
+                }
+                else {
+                    System.out.println("Stat:");
+                    inp = sc.next();
+                    TeamTable.printTeamStats(db.getConnection(), inp);
+                }
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }
@@ -253,9 +270,9 @@ public class NBAmain {
             System.out.printf("%28s\n", "DIVISIONS");
             System.out.println(String.join("", Collections.nCopies(50, "*")));
             System.out.println("Use these commands to explore the divisions:");
-            System.out.println("   dr: Displays records of specific division");
             System.out.println("   *: Gets all the divisions' info");
             System.out.println("   dd: Gets one division's info");
+            System.out.println("   dm: Gets many divisions' info");
             System.out.println("   q: quit database");
             System.out.println("   h: return home");
             inp = sc.next();
@@ -265,25 +282,13 @@ public class NBAmain {
             else if(inp.equals("q")){
                 go_back = true;
             }
-            else if(inp.equals("dr")){
-                Arrays.fill(chars, c);
-                System.out.print(String.valueOf(chars));
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.printf("%27s\n", "DV_DATA");
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.println("Choose Division:");
-                inp = sc.next();
-                //TODO run query
-                System.out.println("\nInput 'cont' to continue:");
-                inp = sc.next();
-            }
             else if(inp.equals("*")){
                 Arrays.fill(chars, c);
                 System.out.print(String.valueOf(chars));
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "DV_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                //TODO run query
+                DivisionTable.printDivisionTable(db.getConnection());
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }
@@ -293,9 +298,23 @@ public class NBAmain {
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "DV_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.println("Choose division:");
+                System.out.println("Choose division (i.e. Atlantic):");
                 inp = sc.next();
-                //TODO run query
+                DivisionTable.printDivisionTableSingular(db.getConnection(), inp);
+                System.out.println("\nInput 'cont' to continue:");
+                inp = sc.next();
+            }
+            else if(inp.equals("dm")){
+                Arrays.fill(chars, c);
+                System.out.print(String.valueOf(chars));
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                System.out.printf("%27s\n", "DV_DATA");
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                System.out.println("Choose divisions (i.e. Atlantic Pacific ...):");
+                String np = sc.nextLine();
+                inp = sc.nextLine();
+                String[] inp2 = inp.split("\\s+");
+                DivisionTable.printDivisionTableMulti(db.getConnection(), inp2);
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }
@@ -315,7 +334,6 @@ public class NBAmain {
             System.out.printf("%32s\n", "CONFERENCES");
             System.out.println(String.join("", Collections.nCopies(50, "*")));
             System.out.println("Use these commands to explore the conferences:");
-            System.out.println("   cr: Displays records of specific conferences");
             System.out.println("   *: Gets all the conferences' info");
             System.out.println("   cc: Gets one conference's info");
             System.out.println("   q: quit database");
@@ -326,18 +344,6 @@ public class NBAmain {
             }
             else if(inp.equals("q")){
                 go_back = true;
-            }
-            else if(inp.equals("cr")){
-                Arrays.fill(chars, c);
-                System.out.print(String.valueOf(chars));
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.printf("%27s\n", "CN_DATA");
-                System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.println("Chose Conference:");
-                inp = sc.next();
-                //TODO run query
-                System.out.println("\nInput 'cont' to continue:");
-                inp = sc.next();
             }
             else if(inp.equals("*")){
                 Arrays.fill(chars, c);
@@ -355,9 +361,9 @@ public class NBAmain {
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 System.out.printf("%27s\n", "CN_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
-                System.out.println("Choose conference:");
+                System.out.println("Choose conference (i.e. 'Eastern'):");
                 inp = sc.next();
-                //TODO run query
+                ConferenceTable.printConferenceTableSingular(db.getConnection(), inp);
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }

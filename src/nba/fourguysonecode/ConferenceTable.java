@@ -284,4 +284,35 @@ public class ConferenceTable {
         }
 
     }
+
+    /**
+     * Queries and print item from the table
+     * @param conn
+     * @param inp
+     */
+    public static void printConferenceTableSingular(Connection conn, String inp){
+        String query = "SELECT * FROM conferences " +
+                "INNER JOIN divisions ON divisions.conf_id = conferences.conf_id " +
+                "INNER JOIN teams ON teams.div_id = divisions.div_id " +
+                "WHERE conferences.conf_name = \'" + inp + "\' " +
+                "ORDER BY teams.win desc";
+        try {
+
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+            System.out.printf(inp + " Conference:\n");
+            System.out.printf("Team            W   L   PERCENTAGE \n");
+            while (result.next()) {
+                double win_loss = (double) result.getInt(10) / (double) (result.getInt(11) + result.getInt(10));
+                System.out.printf("%-15s: %-3d %-3d %-4.2f \n",
+                        result.getString(8),
+                        result.getInt(10),
+                        result.getInt(11),
+                        win_loss);
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

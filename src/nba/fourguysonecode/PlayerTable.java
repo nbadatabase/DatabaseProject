@@ -266,7 +266,7 @@ public class PlayerTable {
             while(result.next()){
                 System.out.println("*************************************************************");
                 System.out.format("%-5s %-5s \nDOB: %-5s Team: %-5s \n"  +
-                                  "GP: %-5d MIN: %-5.2f PTS: %-5.2f FGA: %-5d FGM: %-5d\n" +
+                                  "GP: %-5d MIN: %-4.2f PTS: %-4.2f FGA: %-5d FGM: %-5d\n" +
                                   "3PA: %-5d 3PM: %-5d FTA: %-5d FTM: %-5d OREB: %-5d DREB: %-5d\n" +
                                   "AST: %-5d STL: %-5d BLK: %-5d TOV: %-5d\n",
 
@@ -300,6 +300,147 @@ public class PlayerTable {
         }
         catch (SQLException e)
         {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * Queries and print the table
+     * @param conn
+     */
+    public static void printPlayerTableBasic(Connection conn){
+        String query = "SELECT * FROM players";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+            while(result.next()){
+                System.out.println("*************************************");
+                System.out.printf("%s  %s: DOB - %s\n",
+                        result.getString(3),
+                        result.getString(4),
+                        result.getString(5));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    /**
+     * Queries and prints specific tables
+     * @param conn
+     * @param inp2
+     */
+    public static void printPlayerTableMulti(Connection conn, String[] inp2) {
+        int s = inp2.length;
+        for (int i = 0; i < s; i++) {
+            String[] name = inp2[i].split("\\s");
+            String query = "SELECT * FROM players " +
+                    "INNER JOIN playerstats ON players.player_id = playerstats.player_id "+
+                    "INNER JOIN teams ON players.team_id = teams.team_id " +
+                    "WHERE players.first_name = \'"+ name[0] +"\' AND players.last_name = \'" + name[1] + "\'";
+            try {
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(query);
+                while(result.next()){
+                    System.out.println("*************************************************************");
+                    System.out.format("%-5s %-5s \nDOB: %-5s Team: %-5s \n"  +
+                                    "GP: %-5d MIN: %-4.2f PTS: %-4.2f FGA: %-5d FGM: %-5d\n" +
+                                    "3PA: %-5d 3PM: %-5d FTA: %-5d FTM: %-5d OREB: %-5d DREB: %-5d\n" +
+                                    "AST: %-5d STL: %-5d BLK: %-5d TOV: %-5d\n",
+
+                            result.getString(3),  //First name
+                            result.getString(4),  //Last name
+                            result.getString(5),    //DOB
+                            result.getString(24), //Should be team name
+
+                            result.getInt(7),     //GP
+                            result.getFloat(8),     //MIN
+                            result.getFloat(9),     //PTS
+                            result.getInt(10),    //FGA
+                            result.getInt(11),    //FGM
+
+                            result.getInt(12),    //3PA
+                            result.getInt(13),    //3PM
+                            result.getInt(14),    //FTA
+                            result.getInt(15),    //FTM
+                            result.getInt(16),    //OREB
+                            result.getInt(17),    //DREB
+
+                            result.getInt(18),    //AST
+                            result.getInt(19),    //STL
+                            result.getInt(20),    //BLK
+                            result.getInt(21)     //TOV
+                    );
+
+
+                }
+
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Queries and prints specific tables
+     * @param conn
+     * @param inp2
+     */
+    public static void printPlayerTableMultiBasic(Connection conn, String[] inp2) {
+        int s = inp2.length;
+        for (int i = 0; i < s; i++) {
+            String[] name = inp2[i].split("\\s");
+            String query = "SELECT * FROM players " +
+                    "WHERE players.first_name = \'"+ name[0] +"\' AND players.last_name = \'" + name[1] + "\'";
+            try {
+                Statement stmt = conn.createStatement();
+                ResultSet result = stmt.executeQuery(query);
+                while(result.next()){
+                    System.out.println("*************************************************************");
+                    System.out.format("%s %s: DOB: %-5s\n",
+                            result.getString(3),  //First name
+                            result.getString(4),  //Last name
+                            result.getString(5));
+                }
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * Queries and prints specific stats from table
+     * @param conn
+     * @param inp
+     */
+    public static void printPlayerStats(Connection conn, String inp){
+        String query = "SELECT " + inp + ", first_name, last_name FROM playerstats " +
+                "INNER JOIN players ON playerstats.player_id = players.player_id " +
+                "ORDER BY playerstats."+ inp +" DESC";
+        try {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery(query);
+            while(result.next()){
+                System.out.println("*************************************");
+                if(inp.equals("tot_pts") || inp.equals("tot_mins")){
+                    System.out.printf("%s %s: %.2f \n",
+                            result.getString(2),
+                            result.getString(3),
+                            result.getFloat(1));
+                }
+                else{
+                    System.out.printf("%s %s: %d \n",
+                            result.getString(2),
+                            result.getString(3),
+                            result.getInt(1));
+                }
+            }
+        } catch (SQLException e) {
             e.printStackTrace();
         }
     }
