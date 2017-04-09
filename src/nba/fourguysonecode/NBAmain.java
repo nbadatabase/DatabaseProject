@@ -80,7 +80,7 @@ public class NBAmain {
             System.out.println("Use these commands to explore the players:");
             System.out.println("Precede marked commands [x] with 'b' to just show basic player info");
             System.out.println("   [x]*: Gets all the players' stats");
-            System.out.println("   [x]fl: Gets one player's stats");
+            System.out.println("   [x]fl: Gets players' stats");
             System.out.println("   s: Shows league leaders for stat");
             System.out.println("   q: quit database");
             System.out.println("   h: return home");
@@ -140,7 +140,7 @@ public class NBAmain {
                 System.out.println("If you already know your stat: c");
                 inp = sc.next();
                 if (inp.equals("ls")){
-                    System.out.println("Total Minutes: tot_mins, Total Points: tot_pts, " +
+                    System.out.println("Total Minutes: tot_mins, Points Per Game: tot_pts, " +
                             "Field Goals Attempted: fg_att,\nField Goals Made: fg_made, " +
                             "Three Point Shots Attempted: three_att, Three Point Shots Made: three_made,\n" +
                             "Free Throws Attempted: free_att, Free Throws Made: free_made, " +
