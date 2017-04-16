@@ -44,7 +44,9 @@ public class ConferenceTable {
         ArrayList<Conference> conferences = new ArrayList<>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
-            String line;
+
+            // Skip the first line which is just the format specifier for the CSV file.
+            String line = br.readLine();
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
                 conferences.add(new Conference(split));

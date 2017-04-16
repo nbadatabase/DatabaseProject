@@ -1,3 +1,8 @@
-0,0,Boston Celtics,Boston,37,21
-1,1,Chicago Bulls,Chicago,31,30
-2,2,Miami Heat,Miami,29,34
+team_id,division_id,team_name,location,wins,loses
+0,0,Boston Celtics,Boston,53,29
+1,0,Toronto Raptors,Toronto,51,31
+2,0,New York Knicks,New York,31,51
+3,0,Philadelphia 76ers,Philadelphia,28,54
+4,0,Brooklyn Nets,Brooklyn,20,62
+5,1,Chicago Bulls,Chicago,31,30
+6,2,Miami Heat,Miami,29,34

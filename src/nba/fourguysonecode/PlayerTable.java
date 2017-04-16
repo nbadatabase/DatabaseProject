@@ -44,7 +44,9 @@ public class PlayerTable {
         ArrayList<Player> players = new ArrayList<Player>();
         try {
             BufferedReader br = new BufferedReader(new FileReader(fileName));
-            String line;
+
+            // Skip the first line which is just the format specifier for the CSV file.
+            String line = br.readLine();
             while((line = br.readLine()) != null){
                 String[] split = line.split(",");
                 players.add(new Player(split));
@@ -69,8 +71,14 @@ public class PlayerTable {
          *
          * execute only returns if it was successful
          */
-        Statement stmt = conn.createStatement();
-        stmt.execute(sql);
+        try {
+            Statement stmt = conn.createStatement();
+            stmt.execute(sql);
+        }
+        catch (Exception e)
+        {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -85,7 +93,7 @@ public class PlayerTable {
                     + "TEAM_ID INT,"
                     + "FIRST_NAME VARCHAR(255),"
                     + "LAST_NAME VARCHAR(255),"
-                    + "DOB VARCHAR(8),"
+                    + "DOB VARCHAR(10),"
                     + "FOREIGN KEY (TEAM_ID) REFERENCES teams);" ;
 
             /**
@@ -120,7 +128,7 @@ public class PlayerTable {
          */
         String query = String.format("INSERT INTO players "
                         + "VALUES(%d, %d,\'%s\',\'%s\',\'%s\');",
-                player_id, team_id, first_name, last_name, dob);
+                player_id, team_id, first_name.replace("\'", "\'\'"), last_name.replace("\'", "\'\'"), dob);
         try {
             /*
              * create and execute the query
@@ -161,7 +169,8 @@ public class PlayerTable {
         for(int i = 0; i < players.size(); i++){
             Player p = players.get(i);
             sb.append(String.format("(%d, %d,\'%s\',\'%s\',\'%s\')",
-                    p.getPlayer_id(), p.getTeam_id(), p.getFirst_name(), p.getLast_name(), p.getDob()));
+                    p.getPlayer_id(), p.getTeam_id(), p.getFirst_name().replace("\'", "\'\'"),
+                    p.getLast_name().replace("\'", "\'\'"), p.getDob()));
             if( i != players.size()-1){
                 sb.append(",");
             }
