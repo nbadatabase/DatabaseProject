@@ -81,6 +81,7 @@ public class NBAmain {
             System.out.println("Precede marked commands [x] with 'b' to just show basic player info");
             System.out.println("   [x]*: Gets all the players' stats");
             System.out.println("   [x]fl: Gets players' stats");
+            System.out.println("   pc: Compare players' stats");
             System.out.println("   s: Shows league leaders for stat");
             System.out.println("   q: quit database");
             System.out.println("   h: return home");
@@ -127,6 +128,20 @@ public class NBAmain {
                     String[] inp2 = inp.split(", ");
                     PlayerTable.printPlayerTableMultiBasic(db.getConnection(), inp2);
                 }
+                System.out.println("\nInput 'cont' to continue:");
+                inp = sc.next();
+            }
+            else if(inp.equals("pc")){
+                Arrays.fill(chars, c);
+                System.out.print(String.valueOf(chars));
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                System.out.printf("%27s\n", "PL_DATA");
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                System.out.println("Players (i.e. Isaiah Thomas, Avery Bradley, ...):");
+                inp = sc.nextLine();
+                inp = sc.nextLine();
+                String[] inp2 = inp.split(", ");
+                PlayerTable.printPlayerComp(db.getConnection(), inp2);
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }
@@ -177,6 +192,7 @@ public class NBAmain {
             System.out.println("Precede marked commands [x] with 'b' to just show basic team info");
             System.out.println("   [x]*: Gets all the teams' stats");
             System.out.println("   [x]tn: Gets teams' stats");
+            System.out.println("   tc: Compare teams' stats");
             System.out.println("   s: Shows league leaders for stat");
             System.out.println("   q: quit database");
             System.out.println("   h: return home");
@@ -223,6 +239,20 @@ public class NBAmain {
                     String[] inp2 = inp.split(", ");
                     TeamTable.printTeamTableMultiBasic(db.getConnection(), inp2);
                 }
+                System.out.println("\nInput 'cont' to continue:");
+                inp = sc.next();
+            }
+            else if(inp.equals("tc")){
+                Arrays.fill(chars, c);
+                System.out.print(String.valueOf(chars));
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                System.out.printf("%27s\n", "TM_DATA");
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                System.out.println("Teams to be displayed (i.e. Miami Heat, Boston Celtics, ...):");
+                inp = sc.nextLine();
+                inp = sc.nextLine();
+                String[] inp2 = inp.split(", ");
+                TeamTable.printTeamComp(db.getConnection(), inp2);
                 System.out.println("\nInput 'cont' to continue:");
                 inp = sc.next();
             }

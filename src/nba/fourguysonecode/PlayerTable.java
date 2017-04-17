@@ -453,4 +453,126 @@ public class PlayerTable {
             e.printStackTrace();
         }
     }
+    /**
+     * Queries and prints specific stats to compare from table
+     * @param conn
+     * @param inp2
+     */
+    public static void printPlayerComp(Connection conn, String[] inp2){
+        int s = inp2.length;
+        ArrayList<ResultSet> results = new ArrayList<>();
+        for (int i = 0; i < s; i++) {
+            String[] name = inp2[i].split("\\s");
+            String query = "SELECT * FROM players " +
+                    "INNER JOIN playerstats ON players.player_id = playerstats.player_id "+
+                    "INNER JOIN teams ON players.team_id = teams.team_id " +
+                    "WHERE players.first_name = \'"+ name[0] +"\' AND players.last_name = \'" + name[1] + "\'";
+            try {
+                Statement stmt = conn.createStatement(ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY);
+                ResultSet result = stmt.executeQuery(query);
+                results.add(result);
+            }
+            catch (SQLException e)
+            {
+                e.printStackTrace();
+            }
+        }
+        int pl = results.size();
+        System.out.println("*************************************************************");
+        System.out.println("Comparison of " + pl + " players:");
+        System.out.println("- Stat rank shown in parentheses -");
+        System.out.println("*************************************************************");
+        for(int j = 0; j < pl; j++){
+            try {
+                results.get(j).first();
+                System.out.format("%-5s %-5s \n" +
+                                "GP: %-5d (%d) MIN per Game: %-4.2f (%d) PTS per Game: %-4.2f (%d) FGA: %-5d (%d) " +
+                                "FGM: %-5d (%d)\n" +
+                                "3PA: %-5d (%d) 3PM: %-5d (%d) FTA: %-5d (%d) FTM: %-5d (%d) OREB: %-5d (%d) " +
+                                "DREB: %-5d (%d)\n" +
+                                "AST: %-5d (%d) STL: %-5d (%d) BLK: %-5d (%d) TOV: %-5d (%d)\n",
+
+                        results.get(j).getString(3),  //First name
+                        results.get(j).getString(4),  //Last name
+
+                        results.get(j).getInt(7),     //GP
+                        rank(results, j, 7),
+                        results.get(j).getFloat(8)/results.get(j).getFloat(7),     //MIN
+                        rank(results, j, 8),
+                        results.get(j).getFloat(9)/results.get(j).getFloat(7),     //PTS
+                        rank(results, j, 9),
+                        results.get(j).getInt(10),    //FGA
+                        rank(results, j, 10),
+                        results.get(j).getInt(11),    //FG
+                        rank(results, j, 11),
+
+                        results.get(j).getInt(12),    //3PA
+                        rank(results, j, 12),
+                        results.get(j).getInt(13),    //3PM
+                        rank(results, j, 13),
+                        results.get(j).getInt(14),    //FTA
+                        rank(results, j, 14),
+                        results.get(j).getInt(15),    //FTM
+                        rank(results, j, 15),
+                        results.get(j).getInt(16),    //OREB
+                        rank(results, j, 16),
+                        results.get(j).getInt(17),    //DREB
+                        rank(results, j, 17),
+
+                        results.get(j).getInt(18),    //AST
+                        rank(results, j, 18),
+                        results.get(j).getInt(19),    //STL
+                        rank(results, j, 19),
+                        results.get(j).getInt(20),    //BLK
+                        rank(results, j, 20),
+                        results.get(j).getInt(21),     //TOV
+                        rank(results, j, 21));
+                System.out.println("-----");
+            }
+            catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    /**
+     * Ranks stat
+     * @param r
+     * @param num_in_list
+     * @param stat
+     * @return
+     */
+    public static int rank(ArrayList<ResultSet> r, Integer num_in_list, Integer stat){
+        int size = r.size();
+        int rank = 1;
+        int s1 = 0;
+        float s2 = 0;
+        try {
+            r.get(num_in_list).first();
+            if (stat == 8 || stat == 9) {
+                s2 = r.get(num_in_list).getFloat(stat);
+            } else {
+                s1 = r.get(num_in_list).getInt(stat);
+            }
+            for (int i = 0; i < size; i++) {
+                if (i != num_in_list) {
+                    r.get(i).first();
+                    if (stat == 8 || stat == 9) {
+                        if (r.get(i).getFloat(stat) > s2) {
+                            rank++;
+                        }
+                    } else {
+                        if (r.get(i).getInt(stat) > s1) {
+                            rank++;
+                        }
+                    }
+                }
+            }
+        }
+        catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return rank;
+    }
 }
