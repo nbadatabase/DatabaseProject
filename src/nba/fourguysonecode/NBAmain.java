@@ -103,9 +103,7 @@ public class NBAmain {
                 System.out.println("");
                 System.out.println("In order to insert into the database, give all the relevant data for the player.");
                 System.out.println("****************************************************************");
-                System.out.println("Player ID:");
-                inp = sc.next();
-                data.add(inp);
+                data.add("0"); // This use to be the player ID, but we are going to skip it.
                 System.out.println("Team ID:");
                 inp = sc.next();
                 data.add(inp);

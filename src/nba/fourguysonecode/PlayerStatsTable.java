@@ -79,7 +79,7 @@ public class PlayerStatsTable {
     public static void createPlayerStatsTable(Connection conn){
         try {
             String query = "CREATE TABLE IF NOT EXISTS playerstats("
-                    + "PLAYER_ID INT PRIMARY KEY,"
+                    + "PLAYER_ID INT PRIMARY KEY auto_increment,"
                     + "GAMES_PLAYED INT,"
                     + "TOT_MINS FLOAT,"
                     + "TOT_PTS FLOAT,"

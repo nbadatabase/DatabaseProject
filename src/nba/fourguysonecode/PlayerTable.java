@@ -91,7 +91,7 @@ public class PlayerTable {
     public static void createPlayerTable(Connection conn){
         try {
             String query = "CREATE TABLE IF NOT EXISTS players("
-                    + "PLAYER_ID INT PRIMARY KEY,"
+                    + "PLAYER_ID INT PRIMARY KEY auto_increment,"
                     + "TEAM_ID INT,"
                     + "FIRST_NAME VARCHAR(255),"
                     + "LAST_NAME VARCHAR(255),"
@@ -579,16 +579,43 @@ public class PlayerTable {
     }
 
     public static void insertPlayer(Connection conn, ArrayList<String> data){
-        String query1 = "INSERT INTO players VALUES ("+ data.get(0)+", "+data.get(1)+", \'" + data.get(2)+"\', \'" +
+        String query = "SELECT * FROM players WHERE players.first_name = \'" + data.get(2) + "\' AND players.last_name " +
+                "= \'" + data.get(3) + "\'";
+
+        String query1 = "INSERT INTO players(team_id, first_name, last_name, dob) VALUES ("+data.get(1)+", \'" + data.get(2)+"\', \'" +
                 data.get(3) + "\', \'" + data.get(4) + "\')";
-        String query2 = "INSERT INTO playerstats VALUES ("+ data.get(0)+", "+ data.get(5)+", "+ data.get(6)+", "
-                + data.get(7)+", "+ data.get(8)+", "+ data.get(9)+", "+ data.get(10)+", "+ data.get(11)+", "+ data.get(12)
-                +", "+ data.get(13)+", "+ data.get(14)+", "+ data.get(15)+", "+ data.get(16)+", "+ data.get(17)+", "+
-                data.get(18)+", "+data.get(19)+")";
         try{
+            // Execute the search query to see if there is a player with the same name that already exists.
+            Statement stmt = conn.createStatement();
+            if (stmt.execute(query) == true)
+            {
+                // The player already exists.
+                System.out.println("The player already exists!");
+                return;
+            }
+
+            // Execute the insert statement for creating hte player row.
             Statement stmt1 = conn.createStatement();
-            Statement stmt2 = conn.createStatement();
             stmt1.executeUpdate(query1);
+
+            // Get the result set of generated primary keys for the player set.
+            ResultSet set = stmt1.getGeneratedKeys();
+            if (set.next() == false)
+            {
+                // There was no primary key generated for the insert, something went wrong.
+                System.out.println("Failed to insert new player!");
+                return;
+            }
+
+            // Get the player id from the result set.
+            long playerId = set.getLong(1);
+
+            // Create the player stats row based on the primary key from the player insert.
+            String query2 = "INSERT INTO playerstats VALUES ("+ playerId +", "+ data.get(5)+", "+ data.get(6)+", "
+                    + data.get(7)+", "+ data.get(8)+", "+ data.get(9)+", "+ data.get(10)+", "+ data.get(11)+", "+ data.get(12)
+                    +", "+ data.get(13)+", "+ data.get(14)+", "+ data.get(15)+", "+ data.get(16)+", "+ data.get(17)+", "+
+                    data.get(18)+", "+data.get(19)+")";
+            Statement stmt2 = conn.createStatement();
             stmt2.executeUpdate(query2);
         }
         catch (SQLException e){
