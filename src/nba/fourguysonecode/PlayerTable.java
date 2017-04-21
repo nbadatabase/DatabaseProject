@@ -579,6 +579,8 @@ public class PlayerTable {
     }
 
     public static void insertPlayer(Connection conn, ArrayList<String> data){
+        String query = "SELECT * FROM players WHERE players.first_name = \'" + data.get(2) + "\' AND players.last_name " +
+                "= \'" + data.get(3) + "\'";
         String query1 = "INSERT INTO players VALUES ("+ data.get(0)+", "+data.get(1)+", \'" + data.get(2)+"\', \'" +
                 data.get(3) + "\', \'" + data.get(4) + "\')";
         String query2 = "INSERT INTO playerstats VALUES ("+ data.get(0)+", "+ data.get(5)+", "+ data.get(6)+", "
@@ -586,10 +588,16 @@ public class PlayerTable {
                 +", "+ data.get(13)+", "+ data.get(14)+", "+ data.get(15)+", "+ data.get(16)+", "+ data.get(17)+", "+
                 data.get(18)+", "+data.get(19)+")";
         try{
+            Statement stmt = conn.createStatement();
             Statement stmt1 = conn.createStatement();
             Statement stmt2 = conn.createStatement();
-            stmt1.executeUpdate(query1);
-            stmt2.executeUpdate(query2);
+            if(!stmt.execute(query)) {
+                stmt1.executeUpdate(query1);
+                stmt2.executeUpdate(query2);
+            }
+            else{
+                System.out.println("Player already exists.");
+            }
         }
         catch (SQLException e){
             e.printStackTrace();
