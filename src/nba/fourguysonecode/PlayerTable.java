@@ -9,6 +9,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.*;
+import java.util.Scanner;
+import java.util.StringJoiner;
 
 import nba.fourguysonecode.objects.Player;
 
@@ -574,5 +576,24 @@ public class PlayerTable {
             e.printStackTrace();
         }
         return rank;
+    }
+
+    public static void insertPlayer(Connection conn, ArrayList<String> data){
+        String query1 = "INSERT INTO players VALUES ("+ data.get(0)+", "+data.get(1)+", \'" + data.get(2)+"\', \'" +
+                data.get(3) + "\', \'" + data.get(4) + "\')";
+        String query2 = "INSERT INTO playerstats VALUES ("+ data.get(0)+", "+ data.get(5)+", "+ data.get(6)+", "
+                + data.get(7)+", "+ data.get(8)+", "+ data.get(9)+", "+ data.get(10)+", "+ data.get(11)+", "+ data.get(12)
+                +", "+ data.get(13)+", "+ data.get(14)+", "+ data.get(15)+", "+ data.get(16)+", "+ data.get(17)+", "+
+                data.get(18)+", "+data.get(19)+")";
+        try{
+            Statement stmt1 = conn.createStatement();
+            Statement stmt2 = conn.createStatement();
+            stmt1.executeUpdate(query1);
+            stmt2.executeUpdate(query2);
+        }
+        catch (SQLException e){
+            e.printStackTrace();
+            System.out.println("There was an error with your player data.");
+        }
     }
 }

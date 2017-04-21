@@ -82,6 +82,7 @@ public class NBAmain {
             System.out.println("   [x]*: Gets all the players' stats");
             System.out.println("   [x]fl: Gets players' stats");
             System.out.println("   pc: Compare players' stats");
+            System.out.println("   pi: Insert new player");
             System.out.println("   s: Shows league leaders for stat");
             System.out.println("   q: quit database");
             System.out.println("   h: return home");
@@ -91,6 +92,80 @@ public class NBAmain {
             }
             else if(inp.equals("q")){
                 go_back = true;
+            }
+            else if(inp.equals("pi")){
+                Arrays.fill(chars, c);
+                System.out.print(String.valueOf(chars));
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                System.out.printf("%27s\n", "INSERT");
+                System.out.println(String.join("", Collections.nCopies(50, "*")));
+                ArrayList<String> data = new ArrayList<>();
+                System.out.println("");
+                System.out.println("In order to insert into the database, give all the relevant data for the player.");
+                System.out.println("****************************************************************");
+                System.out.println("Player ID:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Team ID:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("First Name:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Last Name:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Date of Birth:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Games Played:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Total Minutes:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Total Points:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Field Goals Attempted:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Field Goals Made:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Threes Attempted:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Threes Made:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Free Throws Attempted:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Free Throws Made:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Offensive Rebounds:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Defensive Rebounds:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Assists:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Steals:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Blocks:");
+                inp = sc.next();
+                data.add(inp);
+                System.out.println("Turnovers:");
+                inp = sc.next();
+                data.add(inp);
+                PlayerTable.insertPlayer(db.getConnection(), data);
+                System.out.println("\nInput to continue");
+                inp = sc.next();
             }
             else if(inp.equals("*") || inp.equals("b*")){
                 Arrays.fill(chars, c);
@@ -104,7 +179,7 @@ public class NBAmain {
                 else{
                     PlayerTable.printPlayerTableBasic(db.getConnection());
                 }
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
 
             }
@@ -128,7 +203,7 @@ public class NBAmain {
                     String[] inp2 = inp.split(", ");
                     PlayerTable.printPlayerTableMultiBasic(db.getConnection(), inp2);
                 }
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
             else if(inp.equals("pc")){
@@ -142,10 +217,10 @@ public class NBAmain {
                 inp = sc.nextLine();
                 String[] inp2 = inp.split(", ");
                 PlayerTable.printPlayerComp(db.getConnection(), inp2);
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
-            else {
+            else if (inp.equals("s")) {
                 Arrays.fill(chars, c);
                 System.out.print(String.valueOf(chars));
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
@@ -170,7 +245,7 @@ public class NBAmain {
                     inp = sc.next();
                     PlayerTable.printPlayerStats(db.getConnection(), inp);
                 }
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
         }
@@ -215,7 +290,7 @@ public class NBAmain {
                 else{
                     TeamTable.printTeamTableBasic(db.getConnection());
                 }
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
 
             }
@@ -239,7 +314,7 @@ public class NBAmain {
                     String[] inp2 = inp.split(", ");
                     TeamTable.printTeamTableMultiBasic(db.getConnection(), inp2);
                 }
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
             else if(inp.equals("tc")){
@@ -253,10 +328,10 @@ public class NBAmain {
                 inp = sc.nextLine();
                 String[] inp2 = inp.split(", ");
                 TeamTable.printTeamComp(db.getConnection(), inp2);
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
-            else {
+            else if(inp.equals("s")){
                 Arrays.fill(chars, c);
                 System.out.print(String.valueOf(chars));
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
@@ -281,7 +356,7 @@ public class NBAmain {
                     inp = sc.next();
                     TeamTable.printTeamStats(db.getConnection(), inp);
                 }
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
         }
@@ -319,7 +394,7 @@ public class NBAmain {
                 System.out.printf("%27s\n", "DV_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 DivisionTable.printDivisionTable(db.getConnection());
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
             else if(inp.equals("dd")){
@@ -331,7 +406,7 @@ public class NBAmain {
                 System.out.println("Choose division (i.e. Atlantic):");
                 inp = sc.next();
                 DivisionTable.printDivisionTableSingular(db.getConnection(), inp);
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
             else if(inp.equals("dm")){
@@ -345,7 +420,7 @@ public class NBAmain {
                 inp = sc.nextLine();
                 String[] inp2 = inp.split("\\s+");
                 DivisionTable.printDivisionTableMulti(db.getConnection(), inp2);
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
         }
@@ -382,7 +457,7 @@ public class NBAmain {
                 System.out.printf("%27s\n", "CN_DATA");
                 System.out.println(String.join("", Collections.nCopies(50, "*")));
                 ConferenceTable.printConferenceTable(db.getConnection());
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
             else if(inp.equals("cc")){
@@ -394,7 +469,7 @@ public class NBAmain {
                 System.out.println("Choose conference (i.e. 'Eastern'):");
                 inp = sc.next();
                 ConferenceTable.printConferenceTableSingular(db.getConnection(), inp);
-                System.out.println("\nInput 'cont' to continue:");
+                System.out.println("\nInput to continue:");
                 inp = sc.next();
             }
         }
