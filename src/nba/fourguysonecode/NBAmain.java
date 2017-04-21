@@ -12,6 +12,8 @@ import java.util.Arrays;
 
 /**
  * Created by joshuasellers on 4/2/17.
+ * 
+ * Main driver for the NBA DB
  */
 public class NBAmain {
 
@@ -37,9 +39,9 @@ public class NBAmain {
             Class.forName("org.h2.Driver");
 
             //creates the connection
-            conn = DriverManager.getConnection(url,
-                    user,
-                    password);
+            this.conn = DriverManager.getConnection(url,
+                                                    user,
+                                                    password);
         } catch (SQLException | ClassNotFoundException e) {
             //You should handle this better
             e.printStackTrace();
@@ -48,10 +50,10 @@ public class NBAmain {
 
     /**
      * just returns the connection
-     * @return: returns class level connection
+     * @return returns class level connection
      */
     public Connection getConnection(){
-        return conn;
+        return this.conn;
     }
 
     /**
@@ -60,7 +62,7 @@ public class NBAmain {
      */
     public void closeConnection(){
         try {
-            conn.close();
+            this.conn.close();
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -68,7 +70,7 @@ public class NBAmain {
 
     private String playerSearch(String inp, Scanner sc, NBAmain db){
         Boolean go_back = false;
-        while (go_back == false) {
+        while (!go_back) {
             char c = '\n';
             int length = 35;
             char[] chars = new char[length];
@@ -524,7 +526,7 @@ public class NBAmain {
             ArrayList<String> tableNames = db.getTablesFromDatabase();
 
             // Check if the Conferences table exists and if not create it.
-            if (tableNames.contains(ConferenceTable.TableName) == false)
+            if (!tableNames.contains(ConferenceTable.TableName))
             {
                 // Create the conferences table.
                 ConferenceTable.createConferenceTable(db.getConnection());
@@ -533,7 +535,7 @@ public class NBAmain {
             }
 
             // Check if the Divisions table exists and if not create it.
-            if (tableNames.contains(DivisionTable.TableName) == false)
+            if (!tableNames.contains(DivisionTable.TableName))
             {
                 // Create the divisions table.
                 DivisionTable.createDivisionTable(db.getConnection());
@@ -542,7 +544,7 @@ public class NBAmain {
             }
 
             // Check if the teams table exists and if not create it.
-            if (tableNames.contains(TeamTable.TableName) == false)
+            if (!tableNames.contains(TeamTable.TableName))
             {
                 // Create the teams table.
                 TeamTable.createTeamTable(db.getConnection());
@@ -551,7 +553,7 @@ public class NBAmain {
             }
 
             // Check if the team stats table exists and if not create it.
-            if (tableNames.contains(TeamStatsTable.TableName) == false)
+            if (!tableNames.contains(TeamStatsTable.TableName))
             {
                 // Create the team stats table.
                 TeamStatsTable.createTeamStatsTable(db.getConnection());
@@ -560,7 +562,7 @@ public class NBAmain {
             }
 
             // Check if the players table exists and if not create it.
-            if (tableNames.contains(PlayerTable.TableName) == false)
+            if (!tableNames.contains(PlayerTable.TableName))
             {
                 // Create the players table.
                 PlayerTable.createPlayerTable(db.getConnection());
@@ -569,7 +571,7 @@ public class NBAmain {
             }
 
             // Check if the player stats table exists and if not create it.
-            if (tableNames.contains(PlayerStatsTable.TableName) == false)
+            if (!tableNames.contains(PlayerStatsTable.TableName))
             {
                 // Create the player stats table.
                 PlayerStatsTable.createPlayerStatsTable(db.getConnection());

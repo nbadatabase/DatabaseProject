@@ -29,14 +29,13 @@ public class PlayerTable {
      * Does not create the table. It must already be created
      *
      * @param conn: database connection to work with
-     * @param fileName
+     * @param fileName the name of the csv file to read
      * @throws SQLException
      */
-
     public static void populatePlayerTableFromCSV(Connection conn,
                                                   String fileName)
             throws SQLException{
-        /**
+        /*
          * Structure to store the data as you read it in
          * Will be used later to populate the table
          *
@@ -54,21 +53,18 @@ public class PlayerTable {
                 players.add(new Player(split));
             }
             br.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        catch (Exception e){
+        } catch (Exception e){
             e.printStackTrace();
         }
 
-        /**
+        /*
          * Creates the SQL query to do a bulk add of all players
          * that were read in. This is more efficient then adding one
          * at a time
          */
         String sql = createPlayerInsertSQL(players);
 
-        /**
+        /*
          * Create and execute a SQL statement
          *
          * execute only returns if it was successful
@@ -76,10 +72,13 @@ public class PlayerTable {
         try {
             Statement stmt = conn.createStatement();
             stmt.execute(sql);
-        }
-        catch (Exception e)
-        {
-            e.printStackTrace();
+        } catch (Exception e) {
+            // Check if insert error was on duplicate.
+            if ( e.getMessage().contains("FN_LN_UNQ")) {
+                System.err.println("There is a duplicate player in the file. No players were added.");
+            } else {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -96,9 +95,10 @@ public class PlayerTable {
                     + "FIRST_NAME VARCHAR(255),"
                     + "LAST_NAME VARCHAR(255),"
                     + "DOB VARCHAR(10),"
-                    + "FOREIGN KEY (TEAM_ID) REFERENCES teams);" ;
+                    + "FOREIGN KEY (TEAM_ID) REFERENCES teams);"
+                    + "CREATE UNIQUE INDEX FN_LN_UNQ ON players(FIRST_NAME, LAST_NAME);";
 
-            /**
+            /*
              * Create a query and execute
              */
             Statement stmt = conn.createStatement();
@@ -111,12 +111,12 @@ public class PlayerTable {
     /**
      * Adds a single player to the database
      *
-     * @param conn
-     * @param player_id
-     * @param team_id
-     * @param first_name
-     * @param last_name
-     * @param dob
+     * @param conn The database to use
+     * @param player_id The ID of the player
+     * @param team_id The ID of the team
+     * @param first_name The players first name
+     * @param last_name The players last name
+     * @param dob The date of birth
      */
     public static void addPlayer(Connection conn,
                                  int player_id,
@@ -146,14 +146,14 @@ public class PlayerTable {
     /**
      * This creates an sql statement to do a bulk add of players
      *
-     * @param players: list of Player objects to add
+     * @param players list of Player objects to add
      *
-     * @return
+     * @return An SQL INSERT string containing all players to insert.
      */
     public static String createPlayerInsertSQL(ArrayList<Player> players){
         StringBuilder sb = new StringBuilder();
 
-        /**
+        /*
          * The start of the statement,
          * tells it the table to add it to
          * the order of the data in reference
@@ -161,7 +161,7 @@ public class PlayerTable {
          */
         sb.append("INSERT INTO players (PLAYER_ID, TEAM_ID, FIRST_NAME, LAST_NAME, DOB) VALUES");
 
-        /**
+        /*
          * For each player append a tuple
          *
          * If it is not the last player add a comma to seperate
@@ -188,22 +188,22 @@ public class PlayerTable {
      * Makes a query to the player table
      * with given columns and conditions
      *
-     * @param conn
+     * @param conn The database to use
      * @param columns: columns to return
      * @param whereClauses: conditions to limit query by
-     * @return
+     * @return The result of the query, or NULL on failure
      */
     public static ResultSet queryPlayerTable(Connection conn,
                                              ArrayList<String> columns,
                                              ArrayList<String> whereClauses){
         StringBuilder sb = new StringBuilder();
 
-        /**
+        /*
          * Start the select query
          */
         sb.append("SELECT ");
 
-        /**
+        /*
          * If we gave no columns just give them all to us
          *
          * other wise add the columns to the query
@@ -211,24 +211,23 @@ public class PlayerTable {
          */
         if(columns.isEmpty()){
             sb.append("* ");
-        }
-        else{
+        } else {
             for(int i = 0; i < columns.size(); i++){
                 if(i != columns.size() - 1){
-                    sb.append(columns.get(i) + ", ");
+                    sb.append(columns.get(i)).append(", ");
                 }
                 else{
-                    sb.append(columns.get(i) + " ");
+                    sb.append(columns.get(i)).append(" ");
                 }
             }
         }
 
-        /**
+        /*
          * Tells it which table to get the data from
          */
         sb.append("FROM players ");
 
-        /**
+        /*
          * If we gave it conditions append them
          * place an AND between them
          */
@@ -236,7 +235,7 @@ public class PlayerTable {
             sb.append("WHERE ");
             for(int i = 0; i < whereClauses.size(); i++){
                 if(i != whereClauses.size() -1){
-                    sb.append(whereClauses.get(i) + " AND ");
+                    sb.append(whereClauses.get(i)).append(" AND ");
                 }
                 else{
                     sb.append(whereClauses.get(i));
@@ -244,7 +243,7 @@ public class PlayerTable {
             }
         }
 
-        /**
+        /*
          * close with semi-colon
          */
         sb.append(";");
@@ -252,7 +251,7 @@ public class PlayerTable {
         //Print it out to verify it made it right
         System.out.println("Query: " + sb.toString());
         try {
-            /**
+            /*
              * Execute the query and return the result set
              */
             Statement stmt = conn.createStatement();
@@ -264,7 +263,7 @@ public class PlayerTable {
     }
     /**
      * Queries and print the table
-     * @param conn
+     * @param conn The database to use
      */
     public static void printPlayerTable(Connection conn)
     {
@@ -317,7 +316,7 @@ public class PlayerTable {
 
     /**
      * Queries and print the table
-     * @param conn
+     * @param conn The database to use
      */
     public static void printPlayerTableBasic(Connection conn){
         String query = "SELECT * FROM players";
@@ -339,8 +338,8 @@ public class PlayerTable {
 
     /**
      * Queries and prints specific tables
-     * @param conn
-     * @param inp2
+     * @param conn The database to use
+     * @param inp2 
      */
     public static void printPlayerTableMulti(Connection conn, String[] inp2) {
         int s = inp2.length;
@@ -397,7 +396,7 @@ public class PlayerTable {
 
     /**
      * Queries and prints specific tables
-     * @param conn
+     * @param conn The database to use
      * @param inp2
      */
     public static void printPlayerTableMultiBasic(Connection conn, String[] inp2) {
@@ -426,7 +425,7 @@ public class PlayerTable {
 
     /**
      * Queries and prints specific stats from table
-     * @param conn
+     * @param conn The database to use
      * @param inp
      */
     public static void printPlayerStats(Connection conn, String inp){
@@ -457,7 +456,7 @@ public class PlayerTable {
     }
     /**
      * Queries and prints specific stats to compare from table
-     * @param conn
+     * @param conn The database to use
      * @param inp2
      */
     public static void printPlayerComp(Connection conn, String[] inp2){
@@ -579,28 +578,17 @@ public class PlayerTable {
     }
 
     public static void insertPlayer(Connection conn, ArrayList<String> data){
-        String query = "SELECT * FROM players WHERE players.first_name = \'" + data.get(2) + "\' AND players.last_name " +
-                "= \'" + data.get(3) + "\'";
 
         String query1 = "INSERT INTO players(team_id, first_name, last_name, dob) VALUES ("+data.get(1)+", \'" + data.get(2)+"\', \'" +
                 data.get(3) + "\', \'" + data.get(4) + "\')";
-        try{
-            // Execute the search query to see if there is a player with the same name that already exists.
-            Statement stmt = conn.createStatement();
-            if (stmt.execute(query) == true)
-            {
-                // The player already exists.
-                System.out.println("The player already exists!");
-                return;
-            }
-
+        try {
             // Execute the insert statement for creating hte player row.
             Statement stmt1 = conn.createStatement();
+            
             stmt1.executeUpdate(query1);
-
             // Get the result set of generated primary keys for the player set.
             ResultSet set = stmt1.getGeneratedKeys();
-            if (set.next() == false)
+            if (!set.next())
             {
                 // There was no primary key generated for the insert, something went wrong.
                 System.out.println("Failed to insert new player!");
@@ -618,9 +606,15 @@ public class PlayerTable {
             Statement stmt2 = conn.createStatement();
             stmt2.executeUpdate(query2);
         }
-        catch (SQLException e){
-            e.printStackTrace();
-            System.out.println("There was an error with your player data.");
+        catch (SQLException e) {
+            System.err.println("There was an error with your player data.");
+
+            // Check if insert error was on duplicate.
+            if ( e.getMessage().contains("FN_LN_UNQ")) {
+                System.err.println("This player already exists.");
+            } else {
+                e.printStackTrace();
+            }
         }
     }
 }
