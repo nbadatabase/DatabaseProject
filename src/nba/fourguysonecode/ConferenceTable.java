@@ -186,7 +186,7 @@ public class ConferenceTable {
          * other wise add the columns to the query
          * adding a comma top seperate
          */
-        if(columns.isEmpty()){
+        if(columns == null || columns.isEmpty()){
             sb.append("* ");
         }
         else{
@@ -209,7 +209,7 @@ public class ConferenceTable {
          * If we gave it conditions append them
          * place an AND between them
          */
-        if(!whereClauses.isEmpty()){
+        if(whereClauses != null && !whereClauses.isEmpty()){
             sb.append("WHERE ");
             for(int i = 0; i < whereClauses.size(); i++){
                 if(i != whereClauses.size() -1){

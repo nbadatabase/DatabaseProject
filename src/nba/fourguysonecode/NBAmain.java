@@ -15,60 +15,9 @@ import java.util.Arrays;
  * 
  * Main driver for the NBA DB
  */
-public class NBAmain {
-
-    //The connection to the database
-    private Connection conn;
-
-    /**
-     * Create a database connection with the given params
-     * @param location: path of where to place the database
-     * @param user: user name for the owner of the database
-     * @param password: password of the database owner
-     */
-
-    public void createConnection(String location,
-                                 String user,
-                                 String password){
-        try {
-
-            //This needs to be on the front of your location
-            String url = "jdbc:h2:" + location;
-
-            //This tells it to use the h2 driver
-            Class.forName("org.h2.Driver");
-
-            //creates the connection
-            this.conn = DriverManager.getConnection(url,
-                                                    user,
-                                                    password);
-        } catch (SQLException | ClassNotFoundException e) {
-            //You should handle this better
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * just returns the connection
-     * @return returns class level connection
-     */
-    public Connection getConnection(){
-        return this.conn;
-    }
-
-    /**
-     * When your database program exits
-     * you should close the connection
-     */
-    public void closeConnection(){
-        try {
-            this.conn.close();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private String playerSearch(String inp, Scanner sc, NBAmain db){
+public class NBAmain
+{    
+    private static String playerSearch(String inp, Scanner sc, NBADatabase db){
         Boolean go_back = false;
         while (!go_back) {
             char c = '\n';
@@ -252,7 +201,7 @@ public class NBAmain {
         return inp;
     }
 
-    private String teamSearch(String inp, Scanner sc, NBAmain db){
+    private static String teamSearch(String inp, Scanner sc, NBADatabase db){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -363,7 +312,7 @@ public class NBAmain {
         return inp;
     }
 
-    private String divisionSearch(String inp, Scanner sc, NBAmain db){
+    private static String divisionSearch(String inp, Scanner sc, NBADatabase db){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -427,7 +376,7 @@ public class NBAmain {
         return inp;
     }
 
-    private String conferenceSearch(String inp, Scanner sc, NBAmain db){
+    private static String conferenceSearch(String inp, Scanner sc, NBADatabase db){
         Boolean go_back = false;
         while (go_back == false) {
             char c = '\n';
@@ -476,113 +425,18 @@ public class NBAmain {
         return inp;
     }
 
-    public ArrayList<String> getTablesFromDatabase()
-    {
-        // Create a new array list to store the results in.
-        ArrayList<String> tableNames = new ArrayList<String>();
-
-        try
-        {
-            // Get a list of tables that aready exist in the database.
-            Statement tableExistsStatement = this.conn.createStatement();
-            ResultSet tableResults = tableExistsStatement.executeQuery("show tables");
-
-            // Loop through all the results in the result set and add each one to the list.
-            while (tableResults.next() == true)
-                tableNames.add(tableResults.getString("TABLE_NAME"));
-
-            // Close the SQL objects.
-            tableResults.close();
-            tableExistsStatement.close();
-        }
-        catch (SQLException e)
-        {
-            // Print a message that we failed to get the table names.
-            System.out.println("NBAmain::getTablesFromDatabase(): failed to get table names from database!");
-        }
-
-        // Return the list of tables.
-        return tableNames;
-    }
-
     /**
      * Starts and runs the database
      * @param args: not used but you can use them
      */
     public static void main(String[] args) {
-        NBAmain db = new NBAmain();
+        NBADatabase db = new NBADatabase();
         Boolean running = true;
 
-        //Hard drive location of the database
-        String location = "./nba.db";
-        String user = "scj";
-        String password = "password";
-
         //Create the database connections, basically makes the database
-        db.createConnection(location, user, password);
+        db.createConnection();
 
-        try {
-            // Get a list of table names that already exist in the database.
-            ArrayList<String> tableNames = db.getTablesFromDatabase();
 
-            // Check if the Conferences table exists and if not create it.
-            if (!tableNames.contains(ConferenceTable.TableName))
-            {
-                // Create the conferences table.
-                ConferenceTable.createConferenceTable(db.getConnection());
-                ConferenceTable.populateConferenceTableFromCSV(db.getConnection(),
-                        "./data/Conference.csv");
-            }
-
-            // Check if the Divisions table exists and if not create it.
-            if (!tableNames.contains(DivisionTable.TableName))
-            {
-                // Create the divisions table.
-                DivisionTable.createDivisionTable(db.getConnection());
-                DivisionTable.populateDivisionTableFromCSV(db.getConnection(),
-                        "./data/Division.csv");
-            }
-
-            // Check if the teams table exists and if not create it.
-            if (!tableNames.contains(TeamTable.TableName))
-            {
-                // Create the teams table.
-                TeamTable.createTeamTable(db.getConnection());
-                TeamTable.populateTeamTableFromCSV(db.getConnection(),
-                        "./data/Team.csv");
-            }
-
-            // Check if the team stats table exists and if not create it.
-            if (!tableNames.contains(TeamStatsTable.TableName))
-            {
-                // Create the team stats table.
-                TeamStatsTable.createTeamStatsTable(db.getConnection());
-                TeamStatsTable.populateTeamStatsTableFromCSV(db.getConnection(),
-                        "./data/TeamStats.csv");
-            }
-
-            // Check if the players table exists and if not create it.
-            if (!tableNames.contains(PlayerTable.TableName))
-            {
-                // Create the players table.
-                PlayerTable.createPlayerTable(db.getConnection());
-                PlayerTable.populatePlayerTableFromCSV(db.getConnection(),
-                        "./data/Player.csv");
-            }
-
-            // Check if the player stats table exists and if not create it.
-            if (!tableNames.contains(PlayerStatsTable.TableName))
-            {
-                // Create the player stats table.
-                PlayerStatsTable.createPlayerStatsTable(db.getConnection());
-                PlayerStatsTable.populatePlayerStatsTableFromCSV(db.getConnection(),
-                        "./data/PlayerStats.csv");
-            }
-
-        }
-        catch (SQLException e) {
-            e.printStackTrace();
-        }
 
         Scanner scan = new Scanner(System.in);
         while(running){
@@ -603,10 +457,10 @@ public class NBAmain {
             System.out.println("  c: explore conference data");
             System.out.println("  q: quit database");
             String s = scan.next();
-            if(s.equals("p")){s = db.playerSearch(s, scan, db);}
-            else if(s.equals("t")){s = db.teamSearch(s, scan, db);}
-            else if(s.equals("d")){s = db.divisionSearch(s, scan, db);}
-            else if(s.equals("c")){s = db.conferenceSearch(s, scan, db);}
+            if(s.equals("p")){s = playerSearch(s, scan, db);}
+            else if(s.equals("t")){s = teamSearch(s, scan, db);}
+            else if(s.equals("d")){s = divisionSearch(s, scan, db);}
+            else if(s.equals("c")){s = conferenceSearch(s, scan, db);}
             if(s.equals("q")){running = false;}
         }
         db.closeConnection();
