@@ -3,6 +3,8 @@ package nba.fourguysonecode;/**
  */
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
@@ -10,8 +12,10 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import nba.fourguysonecode.objects.Conference;
+
 import java.sql.*;
-import java.util.ArrayList;
+import java.util.Arrays;
 
 public class NBAGui extends Application
 {
@@ -41,6 +45,11 @@ public class NBAGui extends Application
     TableView tblDivisions = new TableView();
     TableView tblPlayers = new TableView();
     TableView tblTeams = new TableView();
+
+    ObservableList<Conference> conferences = FXCollections.observableArrayList(
+            new Conference(0, "Eastern"),
+            new Conference(1, "Western")
+    );
 
     // Boolean indicating if the database has been successfully opened.
     private boolean bDatabaseOpened = false;
@@ -73,7 +82,9 @@ public class NBAGui extends Application
 
         // Set the size of the stage.
         primaryStage.setMinWidth(900.0);
+        primaryStage.setMaxWidth(900.0);
         primaryStage.setMinHeight(500.0);
+        primaryStage.setMaxHeight(500.0);
 
         // Display the window to the user.
         primaryStage.show();
@@ -187,10 +198,10 @@ public class NBAGui extends Application
     private TabPane buildTabPane()
     {
         // Initialize the list views that will be used to display all of the data.
-        buildTableView(this.tblConferences, ConferencesColumnHeaders);
-        buildTableView(this.tblDivisions, DivisionsColumnHeaders);
-        buildTableView(this.tblPlayers, PlayersColumnHeaders);
-        buildTableView(this.tblTeams, TeamsColumnHeaders);
+        buildTableView(this.tblConferences, ConferencesColumnHeaders, conferences);
+        buildTableView(this.tblDivisions, DivisionsColumnHeaders, null);
+        buildTableView(this.tblPlayers, PlayersColumnHeaders, null);
+        buildTableView(this.tblTeams, TeamsColumnHeaders, null);
 
         // Create a new tab page for each of the tables we will be displaying.
         Tab conferencesTab = new Tab("Conferences");
@@ -219,7 +230,7 @@ public class NBAGui extends Application
         return pane;
     }
 
-    private void buildTableView(TableView table, String[] columnHeaders)
+    private void buildTableView(TableView table, String[] columnHeaders, ObservableList data)
     {
         // Loop through all of the column headers and add each one to the table.
         for (int i = 0; i < columnHeaders.length; i++)
@@ -227,6 +238,10 @@ public class NBAGui extends Application
             // Create a new column header and add it to the table.
             table.getColumns().add(new TableColumn(columnHeaders[i]));
         }
+
+        // Add the row data to the table.
+        if (data != null)
+            table.setItems(data);
     }
 
     private void displayAlert(Alert.AlertType type, String text)
