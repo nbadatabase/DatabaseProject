@@ -1,4 +1,4 @@
-package nba.fourguysonecode;
+package nba.fourguysonecode.tables;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,7 +18,7 @@ import nba.fourguysonecode.objects.Division;
  */
 public class DivisionTable {
 
-    public static final String TableName = "DIVISIONS";
+    public static final String TableName = "divisions";
 
     /**
      * Reads a cvs file for data and adds them to the division table

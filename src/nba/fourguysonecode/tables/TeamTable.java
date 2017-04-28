@@ -1,4 +1,4 @@
-package nba.fourguysonecode;
+package nba.fourguysonecode.tables;
 
 import nba.fourguysonecode.objects.Team;
 
@@ -18,7 +18,7 @@ import java.util.ArrayList;
  */
 public class TeamTable {
 
-    public static final String TableName = "TEAMS";
+    public static final String TableName = "teams";
 
     /**
      * Reads a cvs file for data and adds them to the team table

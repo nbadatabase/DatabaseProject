@@ -9,13 +9,15 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import nba.fourguysonecode.objects.Conference;
+import nba.fourguysonecode.tables.ConferenceTable;
 
-import java.sql.*;
-import java.util.Arrays;
+import java.util.List;
 
 public class NBAGui extends Application
 {
@@ -23,14 +25,36 @@ public class NBAGui extends Application
     private final String ApplicationName = "NBA Database Viewer";
 
     // Column headers for the table views.
-    private final String[] ConferencesColumnHeaders = new String[] { "Name" };
-    private final String[] DivisionsColumnHeaders = new String[] { "Conference", "Division" };
-    private final String[] PlayersColumnHeaders = new String[]
+    private final String[][] ConferencesColumnHeaders = new String[][]
             {
-                    "Team", "First Name", "Last Name", "Date of Birth", "Games Played", "Total Minutes",
-                    "Total Points", "Field Goals Att", "Field Goals Made", "3P Att", "3P Made",
-                    "Free Throws Att", "Free Throws Made", "Off Rebounds", "Def Rebounds", "Assists",
-                    "Steals", "Blocks", "Turn Overs"
+                    { "Name", "conf_name" }
+            };
+    private final String[][] DivisionsColumnHeaders = new String[][]
+            {
+                    { "Conference", "conf_id" },
+                    { "Division", "div_name" }
+            };
+    private final String[][] PlayersColumnHeaders = new String[][]
+            {
+                    { "Team", "" },
+                    { "First Name", "" },
+                    { "Last Name", "" },
+                    { "Date of Birth", "" },
+                    { "Games Played", "" },
+                    { "Total Minutes", "" },
+                    { "Total Points", "" },
+                    { "Field Goals Att", "" },
+                    { "Field Goals Made", "" },
+                    { "3P Att", "" },
+                    { "3P Made", "" },
+                    { "Free Throws Att", "" },
+                    { "Free Throws Made", "" },
+                    { "Off Rebounds", "" },
+                    { "Def Rebounds", "" },
+                    { "Assists", "" },
+                    { "Steals", "" },
+                    { "Blocks", "" },
+                    { "Turn Overs", "" }
             };
     private final String[] TeamsColumnHeaders = new String[]
             {
@@ -46,10 +70,7 @@ public class NBAGui extends Application
     TableView tblPlayers = new TableView();
     TableView tblTeams = new TableView();
 
-    ObservableList<Conference> conferences = FXCollections.observableArrayList(
-            new Conference(0, "Eastern"),
-            new Conference(1, "Western")
-    );
+    ObservableList<Conference> conferenceData;
 
     // Boolean indicating if the database has been successfully opened.
     private boolean bDatabaseOpened = false;
@@ -108,20 +129,18 @@ public class NBAGui extends Application
             return;
         }
 
-        try
+        // Get a list of conferences from the Conference table and add them to the table view.
+        List<Conference> conferences = ConferenceTable.queryConferenceTable(this.dbConn.getConnection(),
+                null, null);
+        if (conferences != null)
         {
-            // Get a list of conferences from the Conference table and add them to the table view.
-            ResultSet conferences = ConferenceTable.queryConferenceTable(this.dbConn.getConnection(), null, null);
-            while (conferences.next())
-            {
-                // Get the next row in the result set.
-                TableRow row = new TableRow();
-            }
+            // Create an observable collection from the conference data.
+            this.conferenceData = FXCollections.observableArrayList(conferences);
+            this.tblConferences.setItems(this.conferenceData);
         }
-        catch (SQLException e)
-        {
 
-        }
+        // Successfully opened the database.
+        this.bDatabaseOpened = true;
     }
 
     private void closeDatabase()
@@ -198,10 +217,10 @@ public class NBAGui extends Application
     private TabPane buildTabPane()
     {
         // Initialize the list views that will be used to display all of the data.
-        buildTableView(this.tblConferences, ConferencesColumnHeaders, conferences);
-        buildTableView(this.tblDivisions, DivisionsColumnHeaders, null);
-        buildTableView(this.tblPlayers, PlayersColumnHeaders, null);
-        buildTableView(this.tblTeams, TeamsColumnHeaders, null);
+        buildTableView(this.tblConferences, ConferencesColumnHeaders);
+        //buildTableView(this.tblDivisions, DivisionsColumnHeaders, null);
+        //buildTableView(this.tblPlayers, PlayersColumnHeaders, null);
+        //buildTableView(this.tblTeams, TeamsColumnHeaders, null);
 
         // Create a new tab page for each of the tables we will be displaying.
         Tab conferencesTab = new Tab("Conferences");
@@ -230,18 +249,16 @@ public class NBAGui extends Application
         return pane;
     }
 
-    private void buildTableView(TableView table, String[] columnHeaders, ObservableList data)
+    private void buildTableView(TableView table, String[][] columnHeaders)
     {
         // Loop through all of the column headers and add each one to the table.
         for (int i = 0; i < columnHeaders.length; i++)
         {
             // Create a new column header and add it to the table.
-            table.getColumns().add(new TableColumn(columnHeaders[i]));
+            TableColumn column = new TableColumn(columnHeaders[i][0]);
+            column.setCellValueFactory(new PropertyValueFactory(columnHeaders[i][1]));
+            table.getColumns().add(column);
         }
-
-        // Add the row data to the table.
-        if (data != null)
-            table.setItems(data);
     }
 
     private void displayAlert(Alert.AlertType type, String text)

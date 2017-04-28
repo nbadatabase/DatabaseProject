@@ -1,5 +1,7 @@
 package nba.fourguysonecode;
 
+import nba.fourguysonecode.tables.*;
+
 import java.sql.*;
 import java.util.ArrayList;
 
@@ -44,6 +46,9 @@ public class NBADatabase
 
             // Create the connection to the database.
             this.conn = DriverManager.getConnection(url, DatabaseUsername, DatabasePassword);
+
+            // Initialize the database if is has not been initialized yet.
+            initializeDatabase();
 
             // Successfully opened the database connection.
             return true;
@@ -167,7 +172,7 @@ public class NBADatabase
 
             // Loop through all the results in the result set and add each one to the list.
             while (tableResults.next() == true)
-                tableNames.add(tableResults.getString("TABLE_NAME"));
+                tableNames.add(tableResults.getString("TABLE_NAME").toLowerCase());
 
             // Close the SQL objects.
             tableResults.close();

@@ -1,4 +1,4 @@
-package nba.fourguysonecode;
+package nba.fourguysonecode.tables;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -18,7 +18,7 @@ import nba.fourguysonecode.objects.PlayerStats;
  */
 public class PlayerStatsTable {
 
-    public static final String TableName = "PLAYERSTATS";
+    public static final String TableName = "playerstats";
 
     /**
      * Reads a cvs file for data and adds them to the playerstats table

@@ -1,11 +1,11 @@
 package nba.fourguysonecode;
 
-import nba.fourguysonecode.objects.Player;
-import nba.fourguysonecode.objects.TeamStats;
+import nba.fourguysonecode.tables.ConferenceTable;
+import nba.fourguysonecode.tables.DivisionTable;
+import nba.fourguysonecode.tables.PlayerTable;
+import nba.fourguysonecode.tables.TeamTable;
 
-import java.sql.*;
 import java.util.ArrayList;
-import java.util.concurrent.SynchronousQueue;
 import java.util.Collections;
 import java.util.Scanner;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package nba.fourguysonecode;
+package nba.fourguysonecode.tables;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import nba.fourguysonecode.objects.Conference;
 
@@ -18,9 +19,10 @@ import javax.xml.transform.Result;
  * @author joshuasellers
  * Created by joshuasellers on 4/2/17.
  */
-public class ConferenceTable {
+public class ConferenceTable extends DatabaseTable
+{
 
-    public static final String TableName = "CONFERENCES";
+    public static final String TableName = "conferences";
 
     /**
      * Reads a cvs file for data and adds them to the conference table
@@ -170,74 +172,34 @@ public class ConferenceTable {
      * @return
      */
 
-    public static ResultSet queryConferenceTable(Connection conn,
-                                               ArrayList<String> columns,
-                                               ArrayList<String> whereClauses){
-        StringBuilder sb = new StringBuilder();
+    public static List<Conference> queryConferenceTable(Connection conn,
+                                                        ArrayList<String> columns,
+                                                        ArrayList<String> whereClauses)
+    {
+        // Query the database for all matching results.
+        ResultSet results = ConferenceTable.queryTable(conn, ConferenceTable.TableName, columns, whereClauses);
 
-        /**
-         * Start the select query
-         */
-        sb.append("SELECT ");
+        // Create a list to hold all of the Conference objects.
+        ArrayList<Conference> conferences = new ArrayList<>();
 
-        /**
-         * If we gave no columns just give them all to us
-         *
-         * other wise add the columns to the query
-         * adding a comma top seperate
-         */
-        if(columns == null || columns.isEmpty()){
-            sb.append("* ");
-        }
-        else{
-            for(int i = 0; i < columns.size(); i++){
-                if(i != columns.size() - 1){
-                    sb.append(columns.get(i) + ", ");
-                }
-                else{
-                    sb.append(columns.get(i) + " ");
-                }
+        try
+        {
+            // Loop through all of the results and create a Conference object for each one.
+            while (results.next())
+            {
+                // Create a new Conference object using the result data.
+                Conference conf = new Conference(results.getInt(1), results.getString(2));
+                conferences.add(conf);
             }
         }
-
-        /**
-         * Tells it which table to get the data from
-         */
-        sb.append("FROM conferences ");
-
-        /**
-         * If we gave it conditions append them
-         * place an AND between them
-         */
-        if(whereClauses != null && !whereClauses.isEmpty()){
-            sb.append("WHERE ");
-            for(int i = 0; i < whereClauses.size(); i++){
-                if(i != whereClauses.size() -1){
-                    sb.append(whereClauses.get(i) + " AND ");
-                }
-                else{
-                    sb.append(whereClauses.get(i));
-                }
-            }
-        }
-
-        /**
-         * close with semi-colon
-         */
-        sb.append(";");
-
-        //Print it out to verify it made it right
-        System.out.println("Query: " + sb.toString());
-        try {
-            /**
-             * Execute the query and return the result set
-             */
-            Statement stmt = conn.createStatement();
-            return stmt.executeQuery(sb.toString());
-        } catch (SQLException e) {
+        catch (SQLException e)
+        {
+            // An error occurred while processing the results, print the stack trace.
             e.printStackTrace();
         }
-        return null;
+
+        // Return the conference list.
+        return conferences;
     }
     /**
      * Queries and print the table
