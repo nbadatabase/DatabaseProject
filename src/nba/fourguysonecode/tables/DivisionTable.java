@@ -8,6 +8,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 import nba.fourguysonecode.objects.Division;
 
@@ -16,7 +17,8 @@ import nba.fourguysonecode.objects.Division;
  * @author joshuasellers
  * Created by joshuasellers on 4/2/17.
  */
-public class DivisionTable {
+public class DivisionTable extends DatabaseTable
+{
 
     public static final String TableName = "divisions";
 
@@ -170,74 +172,33 @@ public class DivisionTable {
      * @param whereClauses: conditions to limit query by
      * @return
      */
-    public static ResultSet queryDivisionTable(Connection conn,
-                                           ArrayList<String> columns,
-                                           ArrayList<String> whereClauses){
-        StringBuilder sb = new StringBuilder();
+    public static List<Division> queryDivisionTable(Connection conn,
+                                                    ArrayList<String> columns,
+                                                    ArrayList<String> whereClauses)
+    {
+        // Query the database and get all the results.
+        ResultSet results = DivisionTable.queryTable(conn, DivisionTable.TableName, columns, whereClauses);
 
-        /**
-         * Start the select query
-         */
-        sb.append("SELECT ");
+        // Create a list to hold all of the division objects.
+        List<Division> divisions = new ArrayList<>();
 
-        /**
-         * If we gave no columns just give them all to us
-         *
-         * other wise add the columns to the query
-         * adding a comma top seperate
-         */
-        if(columns.isEmpty()){
-            sb.append("* ");
-        }
-        else{
-            for(int i = 0; i < columns.size(); i++){
-                if(i != columns.size() - 1){
-                    sb.append(columns.get(i) + ", ");
-                }
-                else{
-                    sb.append(columns.get(i) + " ");
-                }
+        try
+        {
+            // Loop through all of the results and create a new Division object for each one.
+            while (results.next())
+            {
+                // Create a new Division object from the result data and add it to the list.
+                divisions.add(new Division(results));
             }
         }
-
-        /**
-         * Tells it which table to get the data from
-         */
-        sb.append("FROM divisions ");
-
-        /**
-         * If we gave it conditions append them
-         * place an AND between them
-         */
-        if(!whereClauses.isEmpty()){
-            sb.append("WHERE ");
-            for(int i = 0; i < whereClauses.size(); i++){
-                if(i != whereClauses.size() -1){
-                    sb.append(whereClauses.get(i) + " AND ");
-                }
-                else{
-                    sb.append(whereClauses.get(i));
-                }
-            }
-        }
-
-        /**
-         * close with semi-colon
-         */
-        sb.append(";");
-
-        //Print it out to verify it made it right
-        System.out.println("Query: " + sb.toString());
-        try {
-            /**
-             * Execute the query and return the result set
-             */
-            Statement stmt = conn.createStatement();
-            return stmt.executeQuery(sb.toString());
-        } catch (SQLException e) {
+        catch (SQLException e)
+        {
+            // An error occurred while processing the results, print the stack trace.
             e.printStackTrace();
         }
-        return null;
+
+        // Return the list of Division objects.
+        return divisions;
     }
     /**
      * Queries and print the table

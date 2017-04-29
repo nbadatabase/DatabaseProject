@@ -14,8 +14,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
-import nba.fourguysonecode.objects.Conference;
-import nba.fourguysonecode.tables.ConferenceTable;
+import nba.fourguysonecode.objects.*;
+import nba.fourguysonecode.tables.*;
 
 import java.util.List;
 
@@ -35,6 +35,14 @@ public class NBAGui extends Application
                     { "Division", "div_name" }
             };
     private final String[][] PlayersColumnHeaders = new String[][]
+            {
+                    { "Player ID", "player_id" },
+                    { "Team ID", "team_id" },
+                    { "First Name", "first_name" },
+                    { "Last Name", "last_name" },
+                    { "Date of Birth", "dob" }
+            };
+    private final String[][] PlayersStatsColumnHeaders = new String[][]
             {
                     { "Team", "" },
                     { "First Name", "" },
@@ -68,9 +76,17 @@ public class NBAGui extends Application
     TableView tblConferences = new TableView();
     TableView tblDivisions = new TableView();
     TableView tblPlayers = new TableView();
+    TableView tblPlayerStats = new TableView();
     TableView tblTeams = new TableView();
+    TableView tblTeamStats = new TableView();
 
+    // Observable collections for displaying data in the table view.
     ObservableList<Conference> conferenceData;
+    ObservableList<Division> divisionData;
+    ObservableList<Player> playerData;
+    ObservableList<PlayerStats> playerStatsData;
+    ObservableList<Team> teamData;
+    ObservableList<TeamStats> teamStatsData;
 
     // Boolean indicating if the database has been successfully opened.
     private boolean bDatabaseOpened = false;
@@ -137,6 +153,26 @@ public class NBAGui extends Application
             // Create an observable collection from the conference data.
             this.conferenceData = FXCollections.observableArrayList(conferences);
             this.tblConferences.setItems(this.conferenceData);
+        }
+
+        // Get a list of divisions from the Division table and add it to the table view.
+        List<Division> divisions = DivisionTable.queryDivisionTable(this.dbConn.getConnection(),
+                null, null);
+        if (divisions != null)
+        {
+            // Create an observable collection from the division data.
+            this.divisionData = FXCollections.observableArrayList(divisions);
+            this.tblDivisions.setItems(this.divisionData);
+        }
+
+        // Get a list of players from the Player table and add it to the table view.
+        List<Player> players = PlayerTable.queryPlayerTable(this.dbConn.getConnection(),
+                null, null);
+        if (players != null)
+        {
+            // Create an observable collection from the player data.
+            this.playerData = FXCollections.observableArrayList(players);
+            this.tblPlayers.setItems(this.playerData);
         }
 
         // Successfully opened the database.
@@ -218,8 +254,8 @@ public class NBAGui extends Application
     {
         // Initialize the list views that will be used to display all of the data.
         buildTableView(this.tblConferences, ConferencesColumnHeaders);
-        //buildTableView(this.tblDivisions, DivisionsColumnHeaders, null);
-        //buildTableView(this.tblPlayers, PlayersColumnHeaders, null);
+        buildTableView(this.tblDivisions, DivisionsColumnHeaders);
+        buildTableView(this.tblPlayers, PlayersColumnHeaders);
         //buildTableView(this.tblTeams, TeamsColumnHeaders, null);
 
         // Create a new tab page for each of the tables we will be displaying.
@@ -251,6 +287,9 @@ public class NBAGui extends Application
 
     private void buildTableView(TableView table, String[][] columnHeaders)
     {
+        // Setup the table.
+        table.setColumnResizePolicy(param -> true);
+
         // Loop through all of the column headers and add each one to the table.
         for (int i = 0; i < columnHeaders.length; i++)
         {

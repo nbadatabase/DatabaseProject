@@ -3,10 +3,14 @@ package nba.fourguysonecode.objects;
 import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Created by joshuasellers on 4/2/17.
  */
-public class Player {
+public class Player
+{
     private final SimpleIntegerProperty player_id;
     private final SimpleIntegerProperty team_id;
     private final SimpleStringProperty first_name;
@@ -33,6 +37,16 @@ public class Player {
         this.first_name = new SimpleStringProperty(data[2]);
         this.last_name = new SimpleStringProperty(data[3]);
         this.dob = new SimpleStringProperty(data[4]);
+    }
+
+    public Player(ResultSet rowData) throws SQLException
+    {
+        // Initialize fields using the row data.
+        this.player_id = new SimpleIntegerProperty(rowData.getInt(1));
+        this.team_id = new SimpleIntegerProperty(rowData.getInt(2));
+        this.first_name = new SimpleStringProperty(rowData.getString(3));
+        this.last_name = new SimpleStringProperty(rowData.getString(4));
+        this.dob = new SimpleStringProperty(rowData.getString(5));
     }
 
     public int getPlayer_id()

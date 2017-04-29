@@ -9,6 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.sql.*;
+import java.util.List;
 import java.util.Scanner;
 import java.util.StringJoiner;
 
@@ -19,7 +20,8 @@ import nba.fourguysonecode.objects.Player;
  * @author joshuasellers
  * Created on 4/2/17.
  */
-public class PlayerTable {
+public class PlayerTable extends DatabaseTable
+{
 
     public static final String TableName = "players";
 
@@ -193,73 +195,33 @@ public class PlayerTable {
      * @param whereClauses: conditions to limit query by
      * @return The result of the query, or NULL on failure
      */
-    public static ResultSet queryPlayerTable(Connection conn,
+    public static List<Player> queryPlayerTable(Connection conn,
                                              ArrayList<String> columns,
-                                             ArrayList<String> whereClauses){
-        StringBuilder sb = new StringBuilder();
+                                             ArrayList<String> whereClauses)
+    {
+        // Query the database for all matching results.
+        ResultSet results = PlayerTable.queryTable(conn, PlayerTable.TableName, columns, whereClauses);
 
-        /*
-         * Start the select query
-         */
-        sb.append("SELECT ");
+        // Create a list to hold all of the Player objects.
+        List<Player> players = new ArrayList<>();
 
-        /*
-         * If we gave no columns just give them all to us
-         *
-         * other wise add the columns to the query
-         * adding a comma top seperate
-         */
-        if(columns.isEmpty()){
-            sb.append("* ");
-        } else {
-            for(int i = 0; i < columns.size(); i++){
-                if(i != columns.size() - 1){
-                    sb.append(columns.get(i)).append(", ");
-                }
-                else{
-                    sb.append(columns.get(i)).append(" ");
-                }
+        try
+        {
+            // Loop through all of the results and create a Player object for each one.
+            while (results.next())
+            {
+                // Create a new Player object and add it to the list.
+                players.add(new Player(results));
             }
         }
-
-        /*
-         * Tells it which table to get the data from
-         */
-        sb.append("FROM players ");
-
-        /*
-         * If we gave it conditions append them
-         * place an AND between them
-         */
-        if(!whereClauses.isEmpty()){
-            sb.append("WHERE ");
-            for(int i = 0; i < whereClauses.size(); i++){
-                if(i != whereClauses.size() -1){
-                    sb.append(whereClauses.get(i)).append(" AND ");
-                }
-                else{
-                    sb.append(whereClauses.get(i));
-                }
-            }
-        }
-
-        /*
-         * close with semi-colon
-         */
-        sb.append(";");
-
-        //Print it out to verify it made it right
-        System.out.println("Query: " + sb.toString());
-        try {
-            /*
-             * Execute the query and return the result set
-             */
-            Statement stmt = conn.createStatement();
-            return stmt.executeQuery(sb.toString());
-        } catch (SQLException e) {
+        catch (SQLException e)
+        {
+            // An error occurred while processing the results, print the stack trace.
             e.printStackTrace();
         }
-        return null;
+
+        // Return the player list.
+        return players;
     }
     /**
      * Queries and print the table

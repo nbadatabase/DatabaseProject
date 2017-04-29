@@ -188,8 +188,7 @@ public class ConferenceTable extends DatabaseTable
             while (results.next())
             {
                 // Create a new Conference object using the result data.
-                Conference conf = new Conference(results.getInt(1), results.getString(2));
-                conferences.add(conf);
+                conferences.add(new Conference(results));
             }
         }
         catch (SQLException e)
