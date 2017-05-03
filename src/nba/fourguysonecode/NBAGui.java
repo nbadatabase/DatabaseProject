@@ -2,7 +2,10 @@ package nba.fourguysonecode;/**
  * Created by rmiceli on 4/19/2017.
  */
 
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.application.Application;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
@@ -14,9 +17,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import nba.fourguysonecode.objects.*;
 import nba.fourguysonecode.tables.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class NBAGui extends Application
@@ -25,44 +30,20 @@ public class NBAGui extends Application
     private final String ApplicationName = "NBA Database Viewer";
 
     // Column headers for the table views.
-    private final String[][] ConferencesColumnHeaders = new String[][]
+    private final String[] ConferencesColumnHeaders = new String[]
             {
-                    { "Name", "conf_name" }
+                    "Name"
             };
-    private final String[][] DivisionsColumnHeaders = new String[][]
+    private final String[] DivisionsColumnHeaders = new String[]
             {
-                    { "Conference", "conf_id" },
-                    { "Division", "div_name" }
+                    "Conference", "Division"
             };
-    private final String[][] PlayersColumnHeaders = new String[][]
+    private final String[] PlayersColumnHeaders = new String[]
             {
-                    { "Player ID", "player_id" },
-                    { "Team ID", "team_id" },
-                    { "First Name", "first_name" },
-                    { "Last Name", "last_name" },
-                    { "Date of Birth", "dob" }
-            };
-    private final String[][] PlayersStatsColumnHeaders = new String[][]
-            {
-                    { "Team", "" },
-                    { "First Name", "" },
-                    { "Last Name", "" },
-                    { "Date of Birth", "" },
-                    { "Games Played", "" },
-                    { "Total Minutes", "" },
-                    { "Total Points", "" },
-                    { "Field Goals Att", "" },
-                    { "Field Goals Made", "" },
-                    { "3P Att", "" },
-                    { "3P Made", "" },
-                    { "Free Throws Att", "" },
-                    { "Free Throws Made", "" },
-                    { "Off Rebounds", "" },
-                    { "Def Rebounds", "" },
-                    { "Assists", "" },
-                    { "Steals", "" },
-                    { "Blocks", "" },
-                    { "Turn Overs", "" }
+                    "Team", "First Name", "Last Name", "Date of Birth", "Games Played",
+                    "Total Minutes", "Total Points", "Field Goals Att", "Field Goals Made",
+                    "3P Att", "3P Made", "Free Throws Att", "Free Throws Made", "Off Rebounds",
+                    "Def Rebounds", "Assists", "Steals", "Blocks", "Turn Overs"
             };
     private final String[] TeamsColumnHeaders = new String[]
             {
@@ -73,20 +54,16 @@ public class NBAGui extends Application
             };
 
     // TableViews used for displaying the database data in the GUI.
-    TableView tblConferences = new TableView();
-    TableView tblDivisions = new TableView();
-    TableView tblPlayers = new TableView();
-    TableView tblPlayerStats = new TableView();
-    TableView tblTeams = new TableView();
-    TableView tblTeamStats = new TableView();
+    TableView<List<String>> tblConferences = new TableView();
+    TableView<List<String>> tblDivisions = new TableView();
+    TableView<List<String>> tblPlayers = new TableView();
+    TableView<List<String>> tblTeams = new TableView();
 
     // Observable collections for displaying data in the table view.
-    ObservableList<Conference> conferenceData;
-    ObservableList<Division> divisionData;
-    ObservableList<Player> playerData;
-    ObservableList<PlayerStats> playerStatsData;
-    ObservableList<Team> teamData;
-    ObservableList<TeamStats> teamStatsData;
+    ObservableList<List<String>> conferenceData;
+    ObservableList<List<String>> divisionData;
+    ObservableList<List<String>> playerData;
+    ObservableList<List<String>> teamData;
 
     // Boolean indicating if the database has been successfully opened.
     private boolean bDatabaseOpened = false;
@@ -145,34 +122,29 @@ public class NBAGui extends Application
             return;
         }
 
-        // Get a list of conferences from the Conference table and add them to the table view.
+        // Get all of the database data into lists we can use to create the table bindings.
         List<Conference> conferences = ConferenceTable.queryConferenceTable(this.dbConn.getConnection(),
                 null, null);
-        if (conferences != null)
-        {
-            // Create an observable collection from the conference data.
-            this.conferenceData = FXCollections.observableArrayList(conferences);
-            this.tblConferences.setItems(this.conferenceData);
-        }
-
-        // Get a list of divisions from the Division table and add it to the table view.
         List<Division> divisions = DivisionTable.queryDivisionTable(this.dbConn.getConnection(),
                 null, null);
-        if (divisions != null)
-        {
-            // Create an observable collection from the division data.
-            this.divisionData = FXCollections.observableArrayList(divisions);
-            this.tblDivisions.setItems(this.divisionData);
-        }
-
-        // Get a list of players from the Player table and add it to the table view.
         List<Player> players = PlayerTable.queryPlayerTable(this.dbConn.getConnection(),
                 null, null);
-        if (players != null)
+        List<PlayerStats> playerStats = PlayerStatsTable.queryPlayerStatsTable(this.dbConn.getConnection(),
+                null, null);
+        List<Team> teams = TeamTable.queryTeamTable(this.dbConn.getConnection(),
+                null, null);
+        List<TeamStats> teamStats = TeamStatsTable.queryTeamStatsTable(this.dbConn.getConnection(),
+                null, null);
+
+        // Get a list of players from the Player table and add it to the table view.
+        if (buildPlayerDataList(players, teams, playerStats) == false)
         {
-            // Create an observable collection from the player data.
-            this.playerData = FXCollections.observableArrayList(players);
-            this.tblPlayers.setItems(this.playerData);
+            // Failed to initialize the table data.
+            displayAlert(Alert.AlertType.ERROR, "Failed to build player data for table view!");
+            
+            // Close the connection to the database.
+            this.dbConn.closeConnection();
+            return;
         }
 
         // Successfully opened the database.
@@ -253,8 +225,8 @@ public class NBAGui extends Application
     private TabPane buildTabPane()
     {
         // Initialize the list views that will be used to display all of the data.
-        buildTableView(this.tblConferences, ConferencesColumnHeaders);
-        buildTableView(this.tblDivisions, DivisionsColumnHeaders);
+        //buildTableView(this.tblConferences, ConferencesColumnHeaders);
+        //buildTableView(this.tblDivisions, DivisionsColumnHeaders);
         buildTableView(this.tblPlayers, PlayersColumnHeaders);
         //buildTableView(this.tblTeams, TeamsColumnHeaders, null);
 
@@ -285,7 +257,7 @@ public class NBAGui extends Application
         return pane;
     }
 
-    private void buildTableView(TableView table, String[][] columnHeaders)
+    private void buildTableView(TableView table, String[] columnHeaders)
     {
         // Setup the table.
         table.setColumnResizePolicy(param -> true);
@@ -293,9 +265,21 @@ public class NBAGui extends Application
         // Loop through all of the column headers and add each one to the table.
         for (int i = 0; i < columnHeaders.length; i++)
         {
+            // Create a new constant for the index of this column.
+            final int ColumnIndex = i;
+
             // Create a new column header and add it to the table.
-            TableColumn column = new TableColumn(columnHeaders[i][0]);
-            column.setCellValueFactory(new PropertyValueFactory(columnHeaders[i][1]));
+            TableColumn<List<String>, String> column = new TableColumn(columnHeaders[i]);
+            column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<List<String>, String>, ObservableValue<String>>()
+            {
+                @Override
+                public ObservableValue<String> call(TableColumn.CellDataFeatures<List<String>, String> param)
+                {
+                    return new SimpleStringProperty(param.getValue().get(ColumnIndex));
+                }
+            });
+
+            // Add the column header to the table.
             table.getColumns().add(column);
         }
     }
@@ -309,5 +293,70 @@ public class NBAGui extends Application
 
         // Display the alert to the user.
         msg.show();
+    }
+
+    private boolean buildPlayerDataList(List<Player> players, List<Team> teams, List<PlayerStats> playerStats)
+    {
+        // Check that the arguments are valid.
+        if (players == null || players.size() == 0 || teams == null || 
+                teams.size() == 0 || playerStats == null || playerStats.size() == 0)
+        {
+            // There is not enough data to process.
+            return false;
+        }
+
+        // Initialize the list to hold the player data.
+        this.playerData = FXCollections.observableArrayList(new ArrayList<List<String>>());
+
+        // Loop through all of the players and create lists of strings based on their information.
+        for (int i = 0; i < players.size(); i++)
+        {
+            // Create a new list to hold this players data.
+            List<String> data = new ArrayList<String>();
+
+            // Get the team and player stats object associated with this player.
+            Player player = players.get(i);
+            Team playerTeam = teams.stream().filter(
+                    team -> team.getTeam_id() == player.getTeam_id()).findFirst().orElse(null);
+            PlayerStats stats = playerStats.stream().filter(
+                    stat -> stat.getPlayer_id() == player.getPlayer_id()).findFirst().orElse(null);
+
+            // Check to make sure the team and player stats are valid.
+            if (playerTeam == null || stats == null)
+            {
+                // There is a broken foreign key in the database.
+                displayAlert(Alert.AlertType.ERROR, "There is a broken foreign key in the database for player_id: "
+                        + player.getPlayer_id());
+                return false;
+            }
+
+            // Add the players data to the list.
+            data.add(playerTeam.getTeam_name());
+            data.add(player.getFirst_name());
+            data.add(player.getLast_name());
+            data.add(player.getDob());
+            data.add(String.valueOf(stats.getGames_played()));
+            data.add(String.valueOf(stats.getTot_mins()));
+            data.add(String.valueOf(stats.getTot_pts()));
+            data.add(String.valueOf(stats.getFg_att()));
+            data.add(String.valueOf(stats.getFg_made()));
+            data.add(String.valueOf(stats.getThree_att()));
+            data.add(String.valueOf(stats.getThree_made()));
+            data.add(String.valueOf(stats.getFree_att()));
+            data.add(String.valueOf(stats.getFree_made()));
+            data.add(String.valueOf(stats.getOff_rebound()));
+            data.add(String.valueOf(stats.getDef_rebound()));
+            data.add(String.valueOf(stats.getAssists()));
+            data.add(String.valueOf(stats.getSteals()));
+            data.add(String.valueOf(stats.getBlocks()));
+            data.add(String.valueOf(stats.getTurnovers()));
+
+            // Add the current player's data to the players list.
+            playerData.add(data);
+        }
+
+        // Set the table view to use the data we just created.
+        this.tblPlayers.setItems(this.playerData);
+        return true;
     }
 }
