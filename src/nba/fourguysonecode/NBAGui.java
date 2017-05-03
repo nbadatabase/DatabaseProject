@@ -2,26 +2,27 @@ package nba.fourguysonecode;/**
  * Created by rmiceli on 4/19/2017.
  */
 
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.geometry.HPos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.TableColumn;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.*;
 import javafx.stage.Stage;
 import javafx.util.Callback;
 import nba.fourguysonecode.objects.*;
 import nba.fourguysonecode.tables.*;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class NBAGui extends Application
@@ -54,22 +55,35 @@ public class NBAGui extends Application
             };
 
     // TableViews used for displaying the database data in the GUI.
-    TableView<List<String>> tblConferences = new TableView();
-    TableView<List<String>> tblDivisions = new TableView();
-    TableView<List<String>> tblPlayers = new TableView();
-    TableView<List<String>> tblTeams = new TableView();
+    TableView<List<String>> tblInfo;
 
     // Observable collections for displaying data in the table view.
-    ObservableList<List<String>> conferenceData;
-    ObservableList<List<String>> divisionData;
-    ObservableList<List<String>> playerData;
-    ObservableList<List<String>> teamData;
+    ObservableList<List<String>> tableData = FXCollections.observableArrayList();
+
+    // Combo boxes for filter criteria.
+    ComboBox<String> cmbConference;
+    ComboBox<String> cmbDivision;
+    ComboBox<String> cmbTeam;
+
+    // Observable lists for the search criteria options. These allow us to just update the list
+    // contents without having to touch the combobox control.
+    ObservableList<String> lstConferenceOptions = FXCollections.observableArrayList();
+    ObservableList<String> lstDivisionOptions = FXCollections.observableArrayList();
+    ObservableList<String> lstTeamOptions = FXCollections.observableArrayList();
 
     // Boolean indicating if the database has been successfully opened.
     private boolean bDatabaseOpened = false;
 
     // Our H2 database connection.
     private NBADatabase dbConn = new NBADatabase();
+
+    // Lists of data retrieved from the database.
+    List<Conference> dbConferences;
+    List<Division> dbDivisions;
+    List<Player> dbPlayers;
+    List<PlayerStats> dbPlayerStats;
+    List<Team> dbTeams;
+    List<TeamStats> dbTeamStats;
 
     public static void main(String[] args) {
         launch(args);
@@ -81,17 +95,24 @@ public class NBAGui extends Application
         // Set the title of the window.
         primaryStage.setTitle(ApplicationName);
 
-        // Create a boarder pane and setup each panel we will be using.
-        BorderPane borderPane = new BorderPane();
+        // Create a new VBox to hold the main GUI elements.
+        VBox vBox = new VBox();
 
-        // Set the top pane to the menu bar.
-        borderPane.setTop(buildMenuBar());
+        // Set the top element to the menu bar.
+        vBox.getChildren().add(buildMenuBar());
 
-        // Set the center pane to the tab control.
-        borderPane.setCenter(buildTabPane());
+        // Set the next element to be the filter box.
+        vBox.getChildren().add(buildFilterBox());
+
+        // Initialize the table view.
+        this.tblInfo = new TableView();
+        this.tblInfo.setColumnResizePolicy(param -> true);
+
+        // Set the next element to be the data view box.
+        vBox.getChildren().add(this.tblInfo);
 
         // Create a new Scene which will be the root for all of the Gui elements.
-        Scene scene = new Scene(borderPane);
+        Scene scene = new Scene(vBox);
         primaryStage.setScene(scene);
 
         // Set the size of the stage.
@@ -123,29 +144,54 @@ public class NBAGui extends Application
         }
 
         // Get all of the database data into lists we can use to create the table bindings.
-        List<Conference> conferences = ConferenceTable.queryConferenceTable(this.dbConn.getConnection(),
+        this.dbConferences = ConferenceTable.queryConferenceTable(this.dbConn.getConnection(),
                 null, null);
-        List<Division> divisions = DivisionTable.queryDivisionTable(this.dbConn.getConnection(),
+        this.dbDivisions = DivisionTable.queryDivisionTable(this.dbConn.getConnection(),
                 null, null);
-        List<Player> players = PlayerTable.queryPlayerTable(this.dbConn.getConnection(),
+        this.dbPlayers = PlayerTable.queryPlayerTable(this.dbConn.getConnection(),
                 null, null);
-        List<PlayerStats> playerStats = PlayerStatsTable.queryPlayerStatsTable(this.dbConn.getConnection(),
+        this.dbPlayerStats = PlayerStatsTable.queryPlayerStatsTable(this.dbConn.getConnection(),
                 null, null);
-        List<Team> teams = TeamTable.queryTeamTable(this.dbConn.getConnection(),
+        this.dbTeams = TeamTable.queryTeamTable(this.dbConn.getConnection(),
                 null, null);
-        List<TeamStats> teamStats = TeamStatsTable.queryTeamStatsTable(this.dbConn.getConnection(),
+        this.dbTeamStats = TeamStatsTable.queryTeamStatsTable(this.dbConn.getConnection(),
                 null, null);
 
-        // Get a list of players from the Player table and add it to the table view.
-        if (buildPlayerDataList(players, teams, playerStats) == false)
+        // Reset the filter lists.
+        this.lstConferenceOptions.clear();
+        this.lstDivisionOptions.clear();
+        this.lstTeamOptions.clear();
+
+        // Loop through all of the conferences in the database and add each one to the observable list.
+        for (int i = 0; i < this.dbConferences.size(); i++)
         {
-            // Failed to initialize the table data.
-            displayAlert(Alert.AlertType.ERROR, "Failed to build player data for table view!");
-            
-            // Close the connection to the database.
-            this.dbConn.closeConnection();
-            return;
+            // Add the conference to the observable list.
+            this.lstConferenceOptions.add(this.dbConferences.get(i).getConf_name());
         }
+
+        // Loop through all of the divisions in the database and add each one to the observable list.
+        for (int i = 0; i < this.dbDivisions.size(); i++)
+        {
+            // Add the division to the observable list.
+            this.lstDivisionOptions.add(this.dbDivisions.get(i).getDiv_name());
+        }
+
+        // Loop through all of the teams in the database and add each one to the observable list.
+        for (int i = 0; i < this.dbTeams.size(); i++)
+        {
+            // Add the teams to the observable list.
+            this.lstTeamOptions.add(this.dbTeams.get(i).getTeam_name());
+        }
+
+        // Sort the lists alphabetically.
+        Collections.sort(this.lstConferenceOptions);
+        Collections.sort(this.lstDivisionOptions);
+        Collections.sort(this.lstTeamOptions);
+
+        // Enable the filter boxes.
+        this.cmbConference.setDisable(false);
+        this.cmbDivision.setDisable(false);
+        this.cmbTeam.setDisable(false);
 
         // Successfully opened the database.
         this.bDatabaseOpened = true;
@@ -156,14 +202,23 @@ public class NBAGui extends Application
         // Check if the database is already open.
         if (this.bDatabaseOpened == true)
         {
-            // TODO
+            // Disable all of the filter combo boxes.
+            this.cmbConference.setDisable(true);
+            this.cmbDivision.setDisable(true);
+            this.cmbTeam.setDisable(true);
+
+            // Close the database.
+            this.dbConn.closeConnection();
+
+            // Mark the database as being closed.
+            this.bDatabaseOpened = false;
         }
     }
 
     private MenuBar buildMenuBar()
     {
         // Create the Open menu item which will be used to open the database.
-        MenuItem openItem = new MenuItem("Open");
+        MenuItem openItem = new MenuItem("Open Database");
         openItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -172,7 +227,7 @@ public class NBAGui extends Application
         });
 
         // Create the Close menu item which will be used to close the database.
-        MenuItem closeItem = new MenuItem("Close");
+        MenuItem closeItem = new MenuItem("Close Database");
         closeItem.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent event) {
@@ -202,9 +257,11 @@ public class NBAGui extends Application
             that the about menu does something when you click on it.
          */
         Label hackyAboutLabel = new Label("About");
-        hackyAboutLabel.setOnMouseClicked(new EventHandler<MouseEvent>() {
+        hackyAboutLabel.setOnMouseClicked(new EventHandler<MouseEvent>()
+        {
             @Override
-            public void handle(MouseEvent event) {
+            public void handle(MouseEvent event)
+            {
                 // Display a message box with the about info.
                 displayAlert(Alert.AlertType.INFORMATION, "Created for CSCI-320");
             }
@@ -222,45 +279,95 @@ public class NBAGui extends Application
         return menuBar;
     }
 
-    private TabPane buildTabPane()
+    private GridPane buildFilterBox()
     {
-        // Initialize the list views that will be used to display all of the data.
-        //buildTableView(this.tblConferences, ConferencesColumnHeaders);
-        //buildTableView(this.tblDivisions, DivisionsColumnHeaders);
-        buildTableView(this.tblPlayers, PlayersColumnHeaders);
-        //buildTableView(this.tblTeams, TeamsColumnHeaders, null);
+        // Create a new FlowPane to hold the filter criteria controls.
+        GridPane gridPane = new GridPane();
 
-        // Create a new tab page for each of the tables we will be displaying.
-        Tab conferencesTab = new Tab("Conferences");
-        conferencesTab.setContent(this.tblConferences);
+        // Setup the row constraints.
+        gridPane.getRowConstraints().add(new RowConstraints(50));
 
-        Tab divisionsTab = new Tab("Divisions");
-        divisionsTab.setContent(this.tblDivisions);
+        // Setup the column constraints.
+        ColumnConstraints colConst = new ColumnConstraints(200);
+        colConst.setHalignment(HPos.CENTER);
+        gridPane.getColumnConstraints().addAll(colConst, colConst, colConst);
 
-        Tab playersTab = new Tab("Players");
-        playersTab.setContent(this.tblPlayers);
+        // Create the conference filter.
+        this.cmbConference = new ComboBox<>(this.lstConferenceOptions);
+        this.cmbConference.setPromptText("Conference");
+        this.cmbConference.setDisable(true);
+        this.cmbConference.setMinWidth(150);
+        this.cmbConference.valueProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
+            {
+                System.out.println("Conference index changed");
 
-        Tab teamsTab = new Tab("Teams");
-        teamsTab.setContent(this.tblTeams);
+                // Check to make sure a new filter was actually set.
+                if (oldValue == null || newValue != null || oldValue.equals(newValue) == false)
+                {
+                    // Apply the new conference filter.
+                    setConferenceFilter(newValue);
+                }
+            }
+        });
 
-        // Create a new TabPane and add all of the tab pages to it.
-        TabPane pane = new TabPane();
-        pane.getTabs().addAll(conferencesTab, divisionsTab, playersTab, teamsTab);
+        // Create the division filter.
+        this.cmbDivision = new ComboBox<>(this.lstDivisionOptions);
+        this.cmbDivision.setPromptText("Division");
+        this.cmbDivision.setDisable(true);
+        this.cmbDivision.setMinWidth(150);
+        this.cmbDivision.valueProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
+            {
+                System.out.println("Division index changed");
 
-        // Disable the ability to close the tab pages.
-        pane.setTabClosingPolicy(TabPane.TabClosingPolicy.UNAVAILABLE);
+                // Check to make sure the value has actually changed.
+                if (oldValue == null || newValue != null || oldValue.equals(newValue) == false)
+                {
+                    // Apply the new division filter.
+                    setDivisionFilter(newValue);
+                }
+            }
+        });
 
-        // Add scroll bars to the tab pane so the cell contents can fit.
-        //pane.
+        // Create the team filter.
+        this.cmbTeam = new ComboBox<>(this.lstTeamOptions);
+        this.cmbTeam.setPromptText("Team");
+        this.cmbTeam.setDisable(true);
+        this.cmbTeam.setMinWidth(150);
+        this.cmbTeam.valueProperty().addListener(new ChangeListener<String>()
+        {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue)
+            {
+                System.out.println("Team index changed");
 
-        // Return the tab pane.
-        return pane;
+                // Check to make sure the value has actually changed.
+                if (oldValue == null || newValue != null || oldValue.equals(newValue) == false)
+                {
+                    // Apply the new team filter.
+                    setTeamFilter(newValue);
+                }
+            }
+        });
+
+        // Add the filter comboboxes to the grid pane.
+        gridPane.add(this.cmbConference, 0, 0);
+        gridPane.add(this.cmbDivision, 1, 0);
+        gridPane.add(this.cmbTeam, 2, 0);
+
+        // Return the newly constructed grid pane object.
+        return gridPane;
     }
 
-    private void buildTableView(TableView table, String[] columnHeaders)
+    private void setTableViewColumns(String[] columnHeaders)
     {
-        // Setup the table.
-        table.setColumnResizePolicy(param -> true);
+        // Clear any existing column headers.
+        this.tblInfo.getColumns().clear();
 
         // Loop through all of the column headers and add each one to the table.
         for (int i = 0; i < columnHeaders.length; i++)
@@ -280,7 +387,7 @@ public class NBAGui extends Application
             });
 
             // Add the column header to the table.
-            table.getColumns().add(column);
+            this.tblInfo.getColumns().add(column);
         }
     }
 
@@ -295,7 +402,54 @@ public class NBAGui extends Application
         msg.show();
     }
 
-    private boolean buildPlayerDataList(List<Player> players, List<Team> teams, List<PlayerStats> playerStats)
+    private void setConferenceFilter(String filter)
+    {
+        // Clear the items in the other two filters.
+        this.lstDivisionOptions.clear();
+        this.lstTeamOptions.clear();
+
+        // Get the conference object associated with the selected item.
+        Conference conf = this.dbConferences.stream().filter(
+                c -> c.getConf_name().equals(filter)).findFirst().orElse(null);
+        if (conf == null)
+            return;
+
+        // Build a list of divisions for this conference.
+        Division[] divisions = this.dbDivisions.stream().filter(
+                d -> d.getConf_id() == conf.getConf_id()).toArray(size -> new Division[size]);
+
+        // Loop through all of the divisions and add each one to the combo-box.
+        for (int i = 0; i < divisions.length; i++)
+        {
+            // Add the current division to the divisions combo box.
+            this.lstDivisionOptions.add(divisions[i].getDiv_name());
+
+            // Build a list of all the teams for this division.
+            final int index = i;
+            Team[] teams = this.dbTeams.stream().filter(
+                    t -> t.getDiv_id() == divisions[index].getDiv_id()).toArray(size -> new Team[size]);
+
+            // Loop through all of the teams and add each one to the teams list.
+            for (int x = 0; x < teams.length; x++)
+                this.lstTeamOptions.add(teams[x].getTeam_name());
+        }
+
+        // Sort both lists.
+        Collections.sort(this.lstDivisionOptions);
+        Collections.sort(this.lstTeamOptions);
+    }
+
+    private void setDivisionFilter(String filter)
+    {
+
+    }
+
+    private void setTeamFilter(String filter)
+    {
+
+    }
+
+    /*private boolean buildPlayerDataList(List<Player> players, List<Team> teams, List<PlayerStats> playerStats)
     {
         // Check that the arguments are valid.
         if (players == null || players.size() == 0 || teams == null || 
@@ -358,5 +512,5 @@ public class NBAGui extends Application
         // Set the table view to use the data we just created.
         this.tblPlayers.setItems(this.playerData);
         return true;
-    }
+    }*/
 }
