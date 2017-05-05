@@ -402,6 +402,103 @@ public class NBAGui extends Application
         msg.show();
     }
 
+    private void updateDataView()
+    {
+        // Get the selections for the filter combo boxes.
+        String confName = this.cmbConference.getValue();
+        String divName = this.cmbDivision.getValue();
+        String teamName = this.cmbTeam.getValue();
+
+        // Clear the items from the table view.
+        this.tblInfo.getItems().clear();
+        this.tableData.clear();
+
+        // Clear the column headers from the table view.
+        this.tblInfo.getColumns().clear();
+
+        // If the team name is set we can ignore all the other filter criteria.
+        if (teamName != null)
+        {
+            // Set the column headers to the player stats column headers.
+            setTableViewColumns(PlayersColumnHeaders);
+
+            // Get the team set by the team filter.
+            Team team = this.dbTeams.stream().filter(
+                    t -> t.getTeam_name().equals(teamName) == true).findFirst().orElse(null);
+
+            // Build a list of players that belong to the specified team.
+            Player[] players = this.dbPlayers.stream().filter(
+                    p -> p.getTeam_id() == team.getTeam_id()).toArray(size -> new Player[size]);
+
+            // Loop through all of the players and add each one to the table view data list.
+            for (int i = 0; i < players.length; i++)
+            {
+                // Get the PlayerStats object for this player.
+                final int index = i;
+                PlayerStats stats = this.dbPlayerStats.stream().filter(
+                        s -> s.getPlayer_id() == players[index].getPlayer_id()).findFirst().orElse(null);
+                if (stats == null)
+                {
+                    // There is a broken foreign key in the database.
+                    displayAlert(Alert.AlertType.ERROR, "There is a broken foreign key in the database for player_id: "
+                            + players[i].getPlayer_id());
+                    return;
+                }
+
+                // Add the players data to the list.
+                List<String> data = new ArrayList<String>();
+                data.add(team.getTeam_name());
+                data.add(players[i].getFirst_name());
+                data.add(players[i].getLast_name());
+                data.add(players[i].getDob());
+                data.add(String.valueOf(stats.getGames_played()));
+                data.add(String.valueOf(stats.getTot_mins()));
+                data.add(String.valueOf(stats.getTot_pts()));
+                data.add(String.valueOf(stats.getFg_att()));
+                data.add(String.valueOf(stats.getFg_made()));
+                data.add(String.valueOf(stats.getThree_att()));
+                data.add(String.valueOf(stats.getThree_made()));
+                data.add(String.valueOf(stats.getFree_att()));
+                data.add(String.valueOf(stats.getFree_made()));
+                data.add(String.valueOf(stats.getOff_rebound()));
+                data.add(String.valueOf(stats.getDef_rebound()));
+                data.add(String.valueOf(stats.getAssists()));
+                data.add(String.valueOf(stats.getSteals()));
+                data.add(String.valueOf(stats.getBlocks()));
+                data.add(String.valueOf(stats.getTurnovers()));
+
+                // Add the data to the list.
+                this.tableData.add(data);
+            }
+        }
+        else if (confName != null || divName != null)
+        {
+            // Build a list of teams to display based on the filter criteria that was used.
+            Team[] teams;
+            if (divName != null)
+            {
+                // Get division set by the division filter.
+                Division division = this.dbDivisions.stream().filter(
+                        d -> d.getDiv_name().equals(divName) == true).findFirst().orElse(null);
+
+                // Get a list of teams that belong to this division.
+                teams = this.dbTeams.stream().filter(
+                        t -> t.getDiv_id() == division.getDiv_id()).toArray(size -> new Team[size]);
+            }
+            else
+            {
+                // Get the conference set by the conference filter.
+                Conference conf = this.dbConferences.stream().filter(
+                        c -> c.getConf_name().equals(confName) == true).findFirst().orElse(null);
+
+                // Get a list of divisions that belong to this conference.
+            }
+        }
+
+        // Add the data list to the table view.
+        this.tblInfo.getItems().addAll(this.tableData);
+    }
+
     private void setConferenceFilter(String filter)
     {
         // Clear the items in the other two filters.
@@ -437,16 +534,44 @@ public class NBAGui extends Application
         // Sort both lists.
         Collections.sort(this.lstDivisionOptions);
         Collections.sort(this.lstTeamOptions);
+
+        // Update the data view.
+        updateDataView();
     }
 
     private void setDivisionFilter(String filter)
     {
+        // Clear the teams filter list.
+        this.lstTeamOptions.clear();
 
+        // Get the division object associated with this filter.
+        Division division = this.dbDivisions.stream().filter(
+                d -> d.getDiv_name().equals(filter) == true).findFirst().orElse(null);
+        if (division == null)
+            return;
+
+        // Get a list of teams that belong to this division.
+        Team[] teams = this.dbTeams.stream().filter(
+                t -> t.getDiv_id() == division.getDiv_id()).toArray(size -> new Team[size]);
+
+        // Loop through all of the teams and add each one to the filter list.
+        for (int i = 0; i < teams.length; i++)
+        {
+            // Add the team to the filter list.
+            this.lstTeamOptions.add(teams[i].getTeam_name());
+        }
+
+        // Sort the list.
+        Collections.sort(this.lstTeamOptions);
+
+        // Update the data view.
+        updateDataView();
     }
 
     private void setTeamFilter(String filter)
     {
-
+        // Update the data view.
+        updateDataView();
     }
 
     /*private boolean buildPlayerDataList(List<Player> players, List<Team> teams, List<PlayerStats> playerStats)
