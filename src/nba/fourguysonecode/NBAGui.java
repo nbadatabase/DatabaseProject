@@ -58,6 +58,9 @@ public class NBAGui extends Application
     ComboBox<String> cmbDivision;
     ComboBox<String> cmbTeam;
 
+    // Reset button for filter criteria.
+    Button resetButton;
+
     // Observable lists for the search criteria options. These allow us to just update the list
     // contents without having to touch the combobox control.
     ObservableList<String> lstConferenceOptions = FXCollections.observableArrayList();
@@ -150,41 +153,14 @@ public class NBAGui extends Application
         this.dbTeamStats = TeamStatsTable.queryTeamStatsTable(this.dbConn.getConnection(),
                 null, null);
 
-        // Reset the filter lists.
-        this.lstConferenceOptions.clear();
-        this.lstDivisionOptions.clear();
-        this.lstTeamOptions.clear();
-
-        // Loop through all of the conferences in the database and add each one to the observable list.
-        for (int i = 0; i < this.dbConferences.size(); i++)
-        {
-            // Add the conference to the observable list.
-            this.lstConferenceOptions.add(this.dbConferences.get(i).getConf_name());
-        }
-
-        // Loop through all of the divisions in the database and add each one to the observable list.
-        for (int i = 0; i < this.dbDivisions.size(); i++)
-        {
-            // Add the division to the observable list.
-            this.lstDivisionOptions.add(this.dbDivisions.get(i).getDiv_name());
-        }
-
-        // Loop through all of the teams in the database and add each one to the observable list.
-        for (int i = 0; i < this.dbTeams.size(); i++)
-        {
-            // Add the teams to the observable list.
-            this.lstTeamOptions.add(this.dbTeams.get(i).getTeam_name());
-        }
-
-        // Sort the lists alphabetically.
-        Collections.sort(this.lstConferenceOptions);
-        Collections.sort(this.lstDivisionOptions);
-        Collections.sort(this.lstTeamOptions);
+        // Build the filter lists.
+        buildFilterLists();
 
         // Enable the filter boxes.
         this.cmbConference.setDisable(false);
         this.cmbDivision.setDisable(false);
         this.cmbTeam.setDisable(false);
+        this.resetButton.setDisable(false);
 
         // Successfully opened the database.
         this.bDatabaseOpened = true;
@@ -199,6 +175,7 @@ public class NBAGui extends Application
             this.cmbConference.setDisable(true);
             this.cmbDivision.setDisable(true);
             this.cmbTeam.setDisable(true);
+            this.resetButton.setDisable(true);
 
             // Close the database.
             this.dbConn.closeConnection();
@@ -270,6 +247,40 @@ public class NBAGui extends Application
 
         // Return the menubar object.
         return menuBar;
+    }
+
+    private void buildFilterLists()
+    {
+        // Reset the filter lists.
+        this.lstConferenceOptions.clear();
+        this.lstDivisionOptions.clear();
+        this.lstTeamOptions.clear();
+
+        // Loop through all of the conferences in the database and add each one to the observable list.
+        for (int i = 0; i < this.dbConferences.size(); i++)
+        {
+            // Add the conference to the observable list.
+            this.lstConferenceOptions.add(this.dbConferences.get(i).getConf_name());
+        }
+
+        // Loop through all of the divisions in the database and add each one to the observable list.
+        for (int i = 0; i < this.dbDivisions.size(); i++)
+        {
+            // Add the division to the observable list.
+            this.lstDivisionOptions.add(this.dbDivisions.get(i).getDiv_name());
+        }
+
+        // Loop through all of the teams in the database and add each one to the observable list.
+        for (int i = 0; i < this.dbTeams.size(); i++)
+        {
+            // Add the teams to the observable list.
+            this.lstTeamOptions.add(this.dbTeams.get(i).getTeam_name());
+        }
+
+        // Sort the lists alphabetically.
+        Collections.sort(this.lstConferenceOptions);
+        Collections.sort(this.lstDivisionOptions);
+        Collections.sort(this.lstTeamOptions);
     }
 
     private GridPane buildFilterBox()
@@ -348,10 +359,28 @@ public class NBAGui extends Application
             }
         });
 
+        // Create a button that will reset the filter criteria.
+        this.resetButton = new Button("Reset");
+        this.resetButton.setDisable(true);
+        this.resetButton.setOnAction(new EventHandler<ActionEvent>()
+        {
+            @Override
+            public void handle(ActionEvent event)
+            {
+                // Reset all of the filter options.
+                buildFilterLists();
+
+                // Clear all of the items and column headers from the table view.
+                tblInfo.getColumns().clear();
+                tblInfo.getItems().clear();
+            }
+        });
+
         // Add the filter comboboxes to the grid pane.
         gridPane.add(this.cmbConference, 0, 0);
         gridPane.add(this.cmbDivision, 1, 0);
         gridPane.add(this.cmbTeam, 2, 0);
+        gridPane.add(this.resetButton, 3, 0);
 
         // Return the newly constructed grid pane object.
         return gridPane;
