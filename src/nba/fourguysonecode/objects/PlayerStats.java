@@ -3,6 +3,9 @@ package nba.fourguysonecode.objects;
 import javafx.beans.property.SimpleFloatProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
 /**
  * Created by joshuasellers on 4/3/17.
  */
@@ -63,6 +66,28 @@ public class PlayerStats {
         this.blocks = new SimpleIntegerProperty(Integer.parseInt(data[14]));
         this.turnovers = new SimpleIntegerProperty(Integer.parseInt(data[15]));
     }
+
+    public PlayerStats(ResultSet result) throws SQLException
+    {
+        // Initialize fields using the result set.
+        this.player_id = new SimpleIntegerProperty(result.getInt(1));
+        this.games_played = new SimpleIntegerProperty(result.getInt(2));
+        this.tot_mins = new SimpleFloatProperty(result.getFloat(3));
+        this.tot_pts = new SimpleFloatProperty(result.getFloat(4));
+        this.fg_att = new SimpleIntegerProperty(result.getInt(5));
+        this.fg_made = new SimpleIntegerProperty(result.getInt(6));
+        this.three_att = new SimpleIntegerProperty(result.getInt(7));
+        this.three_made = new SimpleIntegerProperty(result.getInt(8));
+        this.free_att = new SimpleIntegerProperty(result.getInt(9));
+        this.free_made = new SimpleIntegerProperty(result.getInt(10));
+        this.off_rebound = new SimpleIntegerProperty(result.getInt(11));
+        this.def_rebound = new SimpleIntegerProperty(result.getInt(12));
+        this.assists = new SimpleIntegerProperty(result.getInt(13));
+        this.steals = new SimpleIntegerProperty(result.getInt(14));
+        this.blocks = new SimpleIntegerProperty(result.getInt(15));
+        this.turnovers = new SimpleIntegerProperty(result.getInt(16));
+    }
+
     public int getPlayer_id() {return player_id.get();}
     public int getGames_played() {return games_played.get();}
     public float getTot_mins() {return tot_mins.get();}
