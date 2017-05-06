@@ -22,6 +22,7 @@ import nba.fourguysonecode.objects.*;
 import nba.fourguysonecode.tables.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,14 +32,6 @@ public class NBAGui extends Application
     private final String ApplicationName = "NBA Database Viewer";
 
     // Column headers for the table views.
-    private final String[] ConferencesColumnHeaders = new String[]
-            {
-                    "Name"
-            };
-    private final String[] DivisionsColumnHeaders = new String[]
-            {
-                    "Conference", "Division"
-            };
     private final String[] PlayersColumnHeaders = new String[]
             {
                     "Team", "First Name", "Last Name", "Date of Birth", "Games Played",
@@ -473,8 +466,11 @@ public class NBAGui extends Application
         }
         else if (confName != null || divName != null)
         {
+            // Set the column headers for the table view.
+            setTableViewColumns(TeamsColumnHeaders);
+
             // Build a list of teams to display based on the filter criteria that was used.
-            Team[] teams;
+            Team[] teams = null;
             if (divName != null)
             {
                 // Get division set by the division filter.
@@ -492,6 +488,60 @@ public class NBAGui extends Application
                         c -> c.getConf_name().equals(confName) == true).findFirst().orElse(null);
 
                 // Get a list of divisions that belong to this conference.
+                Division[] divisions = this.dbDivisions.stream().filter(
+                        d -> d.getConf_id() == conf.getConf_id()).toArray(size -> new Division[size]);
+
+                // Loop of all of the divisions and get a list of teams for each one.
+                List<Team> teamList = new ArrayList<Team>();
+                for (int i = 0; i < divisions.length; i++)
+                {
+                    // Get a list of teams that belong to this divisions.
+                    final int index = i;
+                    Team[] tmpTeams = this.dbTeams.stream().filter(
+                            t -> t.getDiv_id() == divisions[index].getDiv_id()).toArray(size -> new Team[size]);
+
+                    // Add the teams to the team list.
+                    for (int x = 0; x < tmpTeams.length; x++)
+                        teamList.add(tmpTeams[x]);
+                }
+
+                // Set the team array.
+                teams = teamList.toArray(new Team[0]); // Why is this a thing? And how does this even work???
+            }
+
+            // Loop through all of the teams in the teams list and add each one to the data view.
+            for (int i = 0; i < teams.length; i++)
+            {
+                // Get the team stats object for this team.
+                final Team team = teams[i];
+                TeamStats stats = this.dbTeamStats.stream().filter(
+                        s -> s.getTeam_id() == team.getTeam_id()).findFirst().orElse(null);
+                Division division = this.dbDivisions.stream().filter(
+                        d -> d.getDiv_id() == team.getDiv_id()).findFirst().orElse(null);
+
+                // Create a new list for the team data.
+                List<String> data = new ArrayList<String>();
+                data.add(division.getDiv_name());
+                data.add(team.getTeam_name());
+                data.add(team.getLocation());
+                data.add(String.valueOf(team.getWin()));
+                data.add(String.valueOf(team.getLoss()));
+                data.add(String.valueOf(stats.getTot_pts()));
+                data.add(String.valueOf(stats.getFg_att()));
+                data.add(String.valueOf(stats.getFg_made()));
+                data.add(String.valueOf(stats.getThree_att()));
+                data.add(String.valueOf(stats.getThree_made()));
+                data.add(String.valueOf(stats.getFree_att()));
+                data.add(String.valueOf(stats.getFree_made()));
+                data.add(String.valueOf(stats.getOff_rebound()));
+                data.add(String.valueOf(stats.getDef_rebound()));
+                data.add(String.valueOf(stats.getAssists()));
+                data.add(String.valueOf(stats.getSteals()));
+                data.add(String.valueOf(stats.getBlocks()));
+                data.add(String.valueOf(stats.getTurnovers()));
+
+                // Add the data to the list.
+                this.tableData.add(data);
             }
         }
 
