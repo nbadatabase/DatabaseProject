@@ -6,3 +6,26 @@ team_id,division_id,team_name,location,wins,loses
 4,0,Brooklyn Nets,Brooklyn,20,62
 5,1,Chicago Bulls,Chicago,41,41
 6,2,Miami Heat,Miami,41,41
+7,2,Orlando Magic,Orlando,29,53
+8,2,Charlotte Hornets,Charlotte,36,46
+9,2,Atlanta Hawks,Atlanta,43,39
+10,2,Washington Wizards,Washington,49,33
+11,1,Cleveland Cavaliers,Cleveland,51,31
+12,1,Detroit Pistons,Detroit,37,45
+13,1,Indiana Pacers,Indianapolis,42,40
+14,1,Milwaukee Bucks,Milwaukee,42,40
+15,3,Denver Nuggets,Denver,40,42
+16,3,Oklahoma City Thunder,Oklahoma City,47,35
+17,3,Portland Trail Blazers,Portland ,41,41
+18,3,Utah Jazz,Utah,51,31
+19,3,Minnesota Timberwolves,Minneapolis,31,51
+20,4,Golden State Warriors,Oakland,67,15
+21,4,LA Clippers,Los Angeles,51,31
+22,4,Los Angeles Lakers,Los Angeles,26,56
+23,4,Phoenix Suns,Phoenix,24,58
+24,4,Sacramento Kings,Sacramento,32,50
+25,5,Dallas Mavericks,Dallas,33,49
+26,5,Houston Rockets,Houston,55,27
+27,5,Memphis Grizzlies,Memphis,43,39
+28,5,New Orleans Pelicans,New Orleans,34,48
+29,5,San Antonio Spurs,San Antonio,61,21
